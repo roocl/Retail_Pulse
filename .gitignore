@@ -1,0 +1,11 @@
+target/
+.m2/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+logs/
+.env
+checkpoints/
+*.log
