@@ -9,3 +9,6 @@ logs/
 .env
 checkpoints/
 *.log
+README.md
+AGENTS.md
+docs/

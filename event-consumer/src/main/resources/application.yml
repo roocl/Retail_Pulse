@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: event-consumer
+  main:
+    web-application-type: none
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${RETAILPULSE_CONSUMER_GROUP:retailpulse-stage1}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.retailpulse.common
+        spring.json.value.default.type: com.retailpulse.common.CommerceEvent
+    listener:
+      missing-topics-fatal: true
+
+retailpulse:
+  kafka:
+    topic: ${RETAILPULSE_KAFKA_TOPIC:commerce-events}
