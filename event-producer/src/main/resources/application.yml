@@ -6,11 +6,25 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
+      acks: all
+      retries: 2147483647
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        delivery.timeout.ms: 30000
+        request.timeout.ms: 10000
+        max.block.ms: 10000
         spring.json.add.type.headers: false
 
 retailpulse:
+  generator:
+    count: ${RETAILPULSE_GENERATOR_COUNT:100}
+    interval-ms: ${RETAILPULSE_GENERATOR_INTERVAL_MS:100}
+    seed: ${RETAILPULSE_GENERATOR_SEED:42}
+    duplicate-rate: ${RETAILPULSE_GENERATOR_DUPLICATE_RATE:0.05}
+    out-of-order-rate: ${RETAILPULSE_GENERATOR_OUT_OF_ORDER_RATE:0.10}
+    start-time: ${RETAILPULSE_GENERATOR_START_TIME:2026-01-15T10:00:00Z}
   kafka:
     topic: ${RETAILPULSE_KAFKA_TOPIC:commerce-events}

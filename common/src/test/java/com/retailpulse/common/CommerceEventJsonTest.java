@@ -3,7 +3,8 @@ package com.retailpulse.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -16,14 +17,15 @@ class CommerceEventJsonTest {
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    @Test
-    void shouldRoundTripTheEventContract() throws Exception {
+    @ParameterizedTest
+    @EnumSource(EventType.class)
+    void shouldRoundTripTheEventContract(EventType eventType) throws Exception {
         CommerceEvent source = new CommerceEvent(
                 CommerceEvent.CURRENT_SCHEMA_VERSION,
                 "evt-001",
                 "user-1001",
                 "product-2001",
-                EventType.ORDER_CREATED,
+                eventType,
                 new BigDecimal("129.90"),
                 1,
                 Instant.parse("2026-01-15T10:00:00Z")
