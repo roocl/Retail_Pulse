@@ -23,6 +23,7 @@
         <module>common</module>
         <module>event-producer</module>
         <module>event-consumer</module>
+        <module>analytics-job</module>
     </modules>
 
     <properties>

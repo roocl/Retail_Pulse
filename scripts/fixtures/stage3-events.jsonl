@@ -1,0 +1,6 @@
+{"schemaVersion":1,"eventId":"stage3-a","userId":"u1","productId":"p1","eventType":"PAYMENT_COMPLETED","amount":12.30,"quantity":1,"eventTime":"2026-01-15T10:00:00Z"}
+{"schemaVersion":1,"eventId":"stage3-a","userId":"u1","productId":"p1","eventType":"PAYMENT_COMPLETED","amount":12.30,"quantity":1,"eventTime":"2026-01-15T10:00:00Z"}
+{"schemaVersion":1,"eventId":"stage3-b","userId":"u1","productId":"p1","eventType":"REFUND_COMPLETED","amount":2.30,"quantity":1,"eventTime":"2026-01-15T10:00:05Z"}
+{"schemaVersion":1,"eventId":"stage3-invalid","userId":"u1","productId":"p1","eventType":"PAYMENT_COMPLETED","amount":-1,"quantity":1,"eventTime":"2026-01-15T10:00:00Z"}
+not-json
+{"schemaVersion":1,"eventId":"stage3-c","userId":"u1","productId":"p1","eventType":"PRODUCT_CLICK","amount":0.00,"quantity":1,"eventTime":"2026-01-15T09:59:59Z"}

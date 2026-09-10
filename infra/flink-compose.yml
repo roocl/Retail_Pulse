@@ -1,0 +1,44 @@
+# Stage 3 session cluster. Use together with docker-compose.yml after mvn clean verify.
+services:
+  flink-state-init:
+    image: flink:1.20.3-scala_2.12-java17
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["chown flink:flink /state"]
+    volumes:
+      - flink-checkpoints:/state
+
+  jobmanager:
+    image: flink:1.20.3-scala_2.12-java17
+    command: jobmanager
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        parallelism.default: 1
+    volumes:
+      - ../analytics-job/target/analytics-job-0.1.0-SNAPSHOT.jar:/opt/flink/usrlib/analytics-job.jar:ro
+      - flink-checkpoints:/opt/flink/checkpoints
+    depends_on:
+      flink-state-init:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+
+  taskmanager:
+    image: flink:1.20.3-scala_2.12-java17
+    command: taskmanager
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        taskmanager.memory.process.size: 1536m
+    volumes:
+      - flink-checkpoints:/opt/flink/checkpoints
+    depends_on:
+      jobmanager:
+        condition: service_started
+
+volumes:
+  flink-checkpoints:
