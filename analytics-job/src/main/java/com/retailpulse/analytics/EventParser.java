@@ -17,7 +17,7 @@ import java.util.Base64;
 import java.util.Set;
 
 final class EventParser {
-    private static final Set<String> FIELDS = Set.of("schemaVersion", "eventId", "userId", "productId",
+    private static final Set<String> FIELDS = Set.of("schemaVersion", "eventId", "orderId", "userId", "productId",
             "eventType", "amount", "quantity", "eventTime");
     private final ObjectMapper mapper = new ObjectMapper()
             .enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
@@ -39,21 +39,29 @@ final class EventParser {
                     .decode(ByteBuffer.wrap(value)).toString();
             JsonNode node = mapper.readTree(result.json);
             if (node == null || !node.isObject() || node.size() != FIELDS.size()) {
-                throw new IllegalArgumentException("expected object with exactly the eight event fields");
+                throw new IllegalArgumentException("expected object with exactly the event contract fields");
             }
             for (String field : FIELDS) {
-                if (!node.hasNonNull(field)) throw new IllegalArgumentException("missing/null field: " + field);
+                if (!node.has(field) || (!field.equals("orderId") && node.get(field).isNull())) {
+                    throw new IllegalArgumentException("missing/null field: " + field);
+                }
             }
             if (!node.get("amount").isNumber()) throw new IllegalArgumentException("amount must be a JSON number");
             CommerceEvent event = new CommerceEvent(integer(node, "schemaVersion"), text(node, "eventId"),
+                    node.get("orderId").isNull() ? null : text(node, "orderId"),
                     text(node, "userId"), text(node, "productId"), EventType.valueOf(text(node, "eventType")),
                     node.get("amount").decimalValue(), integer(node, "quantity"), Instant.parse(text(node, "eventTime")));
             long timestamp = event.eventTime().toEpochMilli();
-            // Explicit epoch range keeps watermark subtraction away from overflow/sentinel values.
             if (timestamp < 0 || timestamp > 253402300799999L) {
                 throw new IllegalArgumentException("eventTime must be between 1970 and year 9999");
             }
             result.eventId = event.eventId();
+            result.orderId = event.orderId();
+            result.userId = event.userId();
+            result.productId = event.productId();
+            result.eventType = event.eventType();
+            result.amount = event.amount();
+            result.quantity = event.quantity();
             result.eventTime = timestamp;
         } catch (IOException | IllegalArgumentException | DateTimeException | ArithmeticException exception) {
             result.error = exception.getClass().getSimpleName() + ": " + exception.getMessage();

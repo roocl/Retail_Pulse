@@ -23,6 +23,10 @@ class CommerceEventJsonTest {
         CommerceEvent source = new CommerceEvent(
                 CommerceEvent.CURRENT_SCHEMA_VERSION,
                 "evt-001",
+                switch (eventType) {
+                    case ORDER_CREATED, PAYMENT_COMPLETED, REFUND_COMPLETED -> "order-001";
+                    default -> null;
+                },
                 "user-1001",
                 "product-2001",
                 eventType,

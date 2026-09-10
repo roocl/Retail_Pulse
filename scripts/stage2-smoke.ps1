@@ -10,14 +10,9 @@ $topic = "stage2-smoke-$runId"
 $consumerName = "stage2-consumer-$runId"
 $producerJar = Join-Path $projectRoot 'event-producer/target/event-producer-0.1.0-SNAPSHOT.jar'
 $consumerJar = Join-Path $projectRoot 'event-consumer/target/event-consumer-0.1.0-SNAPSHOT.jar'
-if (!(Test-Path $producerJar) -or !(Test-Path $consumerJar)) { throw 'Run mvn clean verify first.' }
+if (!(Test-Path $producerJar) -or !(Test-Path $consumerJar)) { throw 'Build the Producer and Consumer jars first.' }
 
-function Invoke-Docker {
-    param([string[]]$Arguments)
-    $lines = & docker @Arguments 2>&1
-    if ($LASTEXITCODE -ne 0) { throw "docker failed: $($lines -join [Environment]::NewLine)" }
-    return $lines
-}
+. (Join-Path $PSScriptRoot 'flink-test-support.ps1')
 
 try {
     Invoke-Docker -Arguments @('exec', 'retailpulse-kafka', '/opt/kafka/bin/kafka-topics.sh',

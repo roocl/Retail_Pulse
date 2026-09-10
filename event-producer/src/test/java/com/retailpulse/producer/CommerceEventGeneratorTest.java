@@ -11,6 +11,35 @@ import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommerceEventGeneratorTest {
+    @Test
+    void transactionsFollowTheirOrderAndCanOnlyBePaidAndRefundedOnce() {
+        var generator = new CommerceEventGenerator(config(.2, .3));
+        var orders = new java.util.HashMap<String, CommerceEvent>();
+        var payments = new java.util.HashMap<String, CommerceEvent>();
+        var refunds = new HashSet<String>();
+        for (int i = 0; i < 20_000; i++) {
+            var generated = generator.next();
+            if (generated.duplicate()) continue;
+            var event = generated.event();
+            if (event.eventType() == EventType.ORDER_CREATED) {
+                assertNull(orders.put(event.orderId(), event));
+            } else if (event.eventType() == EventType.PAYMENT_COMPLETED || event.eventType() == EventType.REFUND_COMPLETED) {
+                var predecessor = event.eventType() == EventType.PAYMENT_COMPLETED
+                        ? orders.get(event.orderId()) : payments.get(event.orderId());
+                assertNotNull(predecessor);
+                assertEquals(predecessor.userId(), event.userId());
+                assertEquals(predecessor.productId(), event.productId());
+                assertEquals(predecessor.amount(), event.amount());
+                assertEquals(predecessor.quantity(), event.quantity());
+                assertFalse(event.eventTime().isBefore(predecessor.eventTime()));
+                if (event.eventType() == EventType.PAYMENT_COMPLETED) assertNull(payments.put(event.orderId(), event));
+                else assertTrue(refunds.add(event.orderId()));
+            } else assertNull(event.orderId());
+        }
+        assertTrue(payments.size() > 100);
+        assertTrue(refunds.size() > 100);
+    }
+
     static GenerationProperties config(double duplicateRate, double outOfOrderRate) {
         return new GenerationProperties(100, 0, 42, duplicateRate, outOfOrderRate,
                 Instant.parse("2026-01-15T10:00:00Z"));

@@ -1,4 +1,3 @@
-# Requires the stage 3 Compose session cluster; see docs/stage-3-event-governance.md.
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $outputDirectory = Join-Path $projectRoot 'analytics-job/target/stage3-smoke'
@@ -10,17 +9,7 @@ $deadTopic = "stage3-dead-$runId"
 $jobId = $null
 $createdTopics = @()
 
-function Invoke-Docker {
-    param([string[]]$Arguments)
-    $lines = & docker @Arguments 2>&1
-    if ($LASTEXITCODE -ne 0) { throw "docker failed: $($lines -join [Environment]::NewLine)" }
-    return $lines
-}
-
-function Read-JobApi {
-    param([string]$Path)
-    Invoke-RestMethod -Uri "http://localhost:8081$Path" -TimeoutSec 5
-}
+. (Join-Path $PSScriptRoot 'flink-test-support.ps1')
 
 try {
     $deadline = [DateTime]::UtcNow.AddSeconds(60)
@@ -47,7 +36,6 @@ try {
 
     $fixtures = @(Get-Content (Join-Path $PSScriptRoot 'fixtures/stage3-events.jsonl') -Encoding UTF8 | ForEach-Object { $_.Replace('stage3-', "stage3-$runId-") })
     $expectedIds = @("stage3-$runId-a", "stage3-$runId-b", "stage3-$runId-c")
-    # All keys are identical: only one of the three source partitions receives records.
     $fixtures | ForEach-Object { "fixture|$_" } | & docker exec -i retailpulse-kafka /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server kafka:29092 --topic $inputTopic --property parse.key=true --property 'key.separator=|'
     if ($LASTEXITCODE -ne 0) { throw 'Fixture production failed.' }
     $sentAfter = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()

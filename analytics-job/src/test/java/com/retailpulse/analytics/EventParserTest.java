@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EventParserTest {
     static final String VALID = """
-            {"schemaVersion":1,"eventId":"e1","userId":"u1","productId":"p1",
+            {"schemaVersion":2,"eventId":"e1","orderId":"o1","userId":"u1","productId":"p1",
              "eventType":"PAYMENT_COMPLETED","amount":12.30,"quantity":1,"eventTime":"2026-01-15T10:00:00Z"}
             """;
 
@@ -26,7 +26,9 @@ class EventParserTest {
     @Test
     void acceptsEveryEventTypeAndPreservesMetadata() {
         for (var type : com.retailpulse.common.EventType.values()) {
-            var record = parse(VALID.replace("PAYMENT_COMPLETED", type.name()));
+            var json = VALID.replace("PAYMENT_COMPLETED", type.name());
+            if (java.util.Set.of(com.retailpulse.common.EventType.PRODUCT_VIEW, com.retailpulse.common.EventType.PRODUCT_CLICK, com.retailpulse.common.EventType.ADD_TO_CART).contains(type)) json = json.replace("\"o1\"", "null");
+            var record = parse(json);
             assertTrue(record.valid(), record.error);
             assertEquals("e1", record.eventId);
             assertEquals(1768471200000L, record.eventTime);
@@ -42,7 +44,7 @@ class EventParserTest {
     @Test
     void rejectsMissingNullAndUnknownFields() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        var fields = List.of("schemaVersion", "eventId", "userId", "productId", "eventType", "amount", "quantity", "eventTime");
+        var fields = List.of("schemaVersion", "orderId", "eventId", "userId", "productId", "eventType", "amount", "quantity", "eventTime");
         for (String field : fields) {
             ObjectNode node = (ObjectNode) mapper.readTree(VALID);
             node.remove(field);
@@ -50,14 +52,14 @@ class EventParserTest {
             node.putNull(field);
             assertFalse(parse(node.toString()).valid(), field);
         }
-        assertFalse(parse(VALID.replace("\"schemaVersion\":1", "\"schemaVersion\":1,\"extra\":0")).valid());
+        assertFalse(parse(VALID.replace("\"schemaVersion\":2", "\"schemaVersion\":2,\"extra\":0")).valid());
     }
 
     @Test
     void rejectsMalformedJsonCoercionsAndInvalidDomainFields() {
         for (String invalid : List.of("", "[]", "null", "{broken", VALID + "{}",
-                VALID.replace("\"schemaVersion\":1", "\"schemaVersion\":1,\"schemaVersion\":1"),
-                VALID.replace("\"schemaVersion\":1", "\"schemaVersion\":2"),
+                VALID.replace("\"schemaVersion\":2", "\"schemaVersion\":2,\"schemaVersion\":2"),
+                VALID.replace("\"schemaVersion\":2", "\"schemaVersion\":1"),
                 VALID.replace("\"quantity\":1", "\"quantity\":0"),
                 VALID.replace("\"quantity\":1", "\"quantity\":1.5"),
                 VALID.replace("\"quantity\":1", "\"quantity\":\"1\""),

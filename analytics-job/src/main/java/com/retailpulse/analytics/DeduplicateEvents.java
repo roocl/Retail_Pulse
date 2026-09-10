@@ -1,39 +1,37 @@
 package com.retailpulse.analytics;
 
 import org.apache.flink.api.common.functions.OpenContext;
-import org.apache.flink.api.common.state.StateTtlConfig;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
-
-import java.time.Duration;
+import org.apache.flink.util.OutputTag;
 
 public class DeduplicateEvents extends KeyedProcessFunction<String, IngestedRecord, IngestedRecord> {
-    private final long ttlMs;
+    public static final OutputTag<IngestedRecord> LATE_EVENTS =
+            new OutputTag<>("late-events", TypeInformation.of(IngestedRecord.class));
     private transient ValueState<Boolean> seen;
-
-    public DeduplicateEvents(long ttlMs) {
-        if (ttlMs <= 0) throw new IllegalArgumentException("dedup TTL must be positive");
-        this.ttlMs = ttlMs;
-    }
 
     @Override
     public void open(OpenContext context) {
-        var ttl = StateTtlConfig.newBuilder(Duration.ofMillis(ttlMs))
-                .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)
-                .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
-                .cleanupIncrementally(100, true).build();
-        var descriptor = new ValueStateDescriptor<>("seen-event-id", Boolean.class);
-        descriptor.enableTimeToLive(ttl);
-        seen = getRuntimeContext().getState(descriptor);
+        seen = getRuntimeContext().getState(new ValueStateDescriptor<>("seen-event-id", Boolean.class));
     }
 
     @Override
     public void processElement(IngestedRecord record, Context context, Collector<IngestedRecord> out) throws Exception {
-        if (seen.value() == null) {
+        long close = MinuteWindow.end(record.eventTime) - 1;
+        if (context.timerService().currentWatermark() >= close) {
+            context.output(LATE_EVENTS, record);
+        } else if (seen.value() == null) {
             seen.update(true);
+            context.timerService().registerEventTimeTimer(close);
             out.collect(record);
         }
+    }
+
+    @Override
+    public void onTimer(long timestamp, OnTimerContext context, Collector<IngestedRecord> out) throws Exception {
+        seen.clear();
     }
 }

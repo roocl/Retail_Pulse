@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GovernanceOperatorsTest {
     private KeyedOneInputStreamOperatorTestHarness<String, IngestedRecord, IngestedRecord> harness() throws Exception {
-        return new KeyedOneInputStreamOperatorTestHarness<>(new KeyedProcessOperator<>(new DeduplicateEvents(1000)),
+        return new KeyedOneInputStreamOperatorTestHarness<>(new KeyedProcessOperator<>(new DeduplicateEvents()),
                 record -> record.eventId, Types.STRING);
     }
 
@@ -38,40 +38,36 @@ class GovernanceOperatorsTest {
     }
 
     @Test
-    void deduplicatesPerIdAndDoesNotExtendTtlOnDuplicates() throws Exception {
+    void keepsDuplicatesSuppressedUntilWindowCloseAndRoutesLateRecords() throws Exception {
         try (var test = harness()) {
             test.open();
-            test.setStateTtlProcessingTime(0);
-            test.processElement(new StreamRecord<>(EventParserTest.parse(EventParserTest.VALID), 123));
-            test.setStateTtlProcessingTime(900);
-            test.processElement(new StreamRecord<>(EventParserTest.parse(EventParserTest.VALID), 124));
-            test.processElement(new StreamRecord<>(EventParserTest.parse(EventParserTest.VALID.replace("e1", "e2"))));
-            assertEquals(2, test.extractOutputStreamRecords().size());
-            test.setStateTtlProcessingTime(999);
-            test.processElement(new StreamRecord<>(EventParserTest.parse(EventParserTest.VALID)));
-            assertEquals(2, test.extractOutputStreamRecords().size());
-            test.setStateTtlProcessingTime(1000);
-            test.processElement(new StreamRecord<>(EventParserTest.parse(EventParserTest.VALID)));
-            assertEquals(3, test.extractOutputStreamRecords().size());
-            assertEquals(123, test.extractOutputStreamRecords().get(0).getTimestamp());
+            var record = EventParserTest.parse(EventParserTest.VALID);
+            test.processElement(new StreamRecord<>(record, record.eventTime));
+            test.setStateTtlProcessingTime(7_200_000);
+            test.processElement(new StreamRecord<>(record, record.eventTime));
+            assertEquals(1, test.extractOutputStreamRecords().size());
+            test.processWatermark(new org.apache.flink.streaming.api.watermark.Watermark(record.eventTime + 59_999));
+            test.processElement(new StreamRecord<>(record, record.eventTime));
+            assertEquals(1, test.extractOutputStreamRecords().size());
+            assertEquals(1, test.getSideOutput(DeduplicateEvents.LATE_EVENTS).size());
+            assertEquals(0, test.numEventTimeTimers());
         }
     }
 
     @Test
-    void snapshotRestoresSeenIdsUntilProcessingTimeExpiry() throws Exception {
+    void restoresSeenIdsAndEventTimeCleanupFromCheckpoint() throws Exception {
         try (var original = harness(); var restored = harness()) {
             original.open();
-            original.setStateTtlProcessingTime(100);
-            original.processElement(new StreamRecord<>(EventParserTest.parse(EventParserTest.VALID)));
-            var snapshot = original.snapshot(1, 100);
-            restored.initializeState(snapshot);
+            var record = EventParserTest.parse(EventParserTest.VALID);
+            original.processElement(new StreamRecord<>(record, record.eventTime));
+            restored.initializeState(original.snapshot(1, 100));
             restored.open();
-            restored.setStateTtlProcessingTime(500);
-            restored.processElement(new StreamRecord<>(EventParserTest.parse(EventParserTest.VALID)));
+            restored.processElement(new StreamRecord<>(record, record.eventTime));
             assertTrue(restored.extractOutputStreamRecords().isEmpty());
-            restored.setStateTtlProcessingTime(1100);
-            restored.processElement(new StreamRecord<>(EventParserTest.parse(EventParserTest.VALID)));
-            assertEquals(1, restored.extractOutputStreamRecords().size());
+            restored.processWatermark(new org.apache.flink.streaming.api.watermark.Watermark(record.eventTime + 59_999));
+            restored.processElement(new StreamRecord<>(record, record.eventTime));
+            assertTrue(restored.extractOutputStreamRecords().isEmpty());
+            assertEquals(1, restored.getSideOutput(DeduplicateEvents.LATE_EVENTS).size());
         }
     }
 }

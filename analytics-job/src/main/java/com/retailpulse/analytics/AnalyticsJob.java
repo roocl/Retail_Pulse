@@ -21,11 +21,12 @@ public final class AnalyticsJob {
         JobSettings settings = JobSettings.from(args, System.getenv());
         StreamExecutionEnvironment environment = StreamExecutionEnvironment.getExecutionEnvironment();
         build(environment, settings);
-        environment.execute("RetailPulse event governance");
+        environment.execute("RetailPulse commerce metrics");
     }
 
     static void build(StreamExecutionEnvironment environment, JobSettings settings) {
         environment.setParallelism(settings.parallelism());
+        environment.getConfig().disableGenericTypes();
         environment.getConfig().setAutoWatermarkInterval(200);
         environment.enableCheckpointing(settings.checkpointIntervalMs(), CheckpointingMode.EXACTLY_ONCE);
         environment.getCheckpointConfig().setCheckpointStorage(settings.checkpointDirectory());
@@ -46,14 +47,31 @@ public final class AnalyticsJob {
 
         var routed = environment.fromSource(source, EventWatermarks.strategy(
                         Duration.ofMillis(settings.outOfOrderMs()), Duration.ofMillis(settings.idleTimeoutMs())), "kafka-events")
-                .uid("kafka-events-v1")
-                .process(new RouteEvents()).name("validate-and-route").uid("validate-and-route-v1");
+                .uid("kafka-events-v2")
+                .process(new RouteEvents()).name("validate-and-route").uid("validate-and-route-v2");
 
-        routed.keyBy(record -> record.eventId).process(new DeduplicateEvents(settings.dedupTtlMs()))
-                .name("deduplicate-event-id").uid("deduplicate-event-id-v1")
-                .map(record -> record.json).returns(String.class)
+        var unique = routed.keyBy(record -> record.eventId).process(new DeduplicateEvents())
+                .name("deduplicate-event-id").uid("deduplicate-event-id-v2");
+        unique.map(record -> record.json).returns(String.class)
                 .name("valid-json").uid("valid-json-v1")
                 .print("valid-event").name("valid-event-log").uid("valid-event-log-v1");
+        var metrics = MetricsPipeline.attach(unique, settings.topN());
+        unique.getSideOutput(DeduplicateEvents.LATE_EVENTS)
+                .union(metrics.minutes().getSideOutput(DeduplicateEvents.LATE_EVENTS),
+                        metrics.products().getSideOutput(DeduplicateEvents.LATE_EVENTS))
+                .map(new JsonOutput<IngestedRecord>()).returns(String.class)
+                .name("late-json").uid("late-json-v2")
+                .print("late-event").name("late-event-log").uid("late-event-log-v2");
+        metrics.ranking().getSideOutput(MetricsPipeline.LATE_PRODUCTS)
+                .map(new JsonOutput<MinuteMetrics>()).returns(String.class)
+                .name("late-product-json").uid("late-product-json-v2")
+                .print("late-product").name("late-product-log").uid("late-product-log-v2");
+        metrics.minutes().map(new JsonOutput<MinuteMetrics>()).returns(String.class)
+                .name("minute-json").uid("minute-json-v2")
+                .print("minute-metrics").name("minute-metrics-log").uid("minute-metrics-log-v2");
+        metrics.ranking().map(new JsonOutput<ProductRanking>()).returns(String.class)
+                .name("top-n-json").uid("top-n-json-v2")
+                .print("product-top-n").name("product-top-n-log").uid("product-top-n-log-v2");
 
         KafkaSink<String> deadLetters = KafkaSink.<String>builder()
                 .setBootstrapServers(settings.bootstrapServers())

@@ -19,8 +19,8 @@ class AnalyticsJobTest {
             var graph = environment.getStreamGraph();
             Set<String> ids = graph.getStreamNodes().stream()
                     .map(node -> node.getTransformationUID()).collect(Collectors.toSet());
-            assertTrue(ids.containsAll(Set.of("kafka-events-v1", "validate-and-route-v1",
-                    "deduplicate-event-id-v1", "valid-json-v1")));
+            assertTrue(ids.containsAll(Set.of("kafka-events-v2", "validate-and-route-v2",
+                    "deduplicate-event-id-v2", "minute-metrics-v2", "product-top-n-v2", "late-event-log-v2")));
             assertEquals(CheckpointingMode.EXACTLY_ONCE, graph.getCheckpointConfig().getCheckpointingMode());
             assertEquals(10000, graph.getCheckpointConfig().getCheckpointInterval());
             assertTrue(graph.getCheckpointConfig().isExternalizedCheckpointsEnabled());
