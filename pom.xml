@@ -24,9 +24,11 @@
         <module>event-producer</module>
         <module>event-consumer</module>
         <module>analytics-job</module>
+        <module>query-api</module>
     </modules>
 
     <properties>
         <java.version>17</java.version>
+        <clickhouse.version>0.9.9</clickhouse.version>
     </properties>
 </project>

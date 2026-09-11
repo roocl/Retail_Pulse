@@ -53,7 +53,7 @@
         <dependency>
             <groupId>com.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
-            <version>0.9.9</version>
+            <version>${clickhouse.version}</version>
             <classifier>all</classifier>
             <exclusions>
                 <exclusion>

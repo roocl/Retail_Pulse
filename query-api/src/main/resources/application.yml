@@ -1,0 +1,31 @@
+server:
+  address: 127.0.0.1
+  port: ${QUERY_PORT:8080}
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+  application:
+    name: retailpulse-query
+  web:
+    resources:
+      static-locations: classpath:/dashboard/
+  mvc:
+    problemdetails:
+      enabled: true
+retailpulse:
+  clickhouse:
+    url: ${CLICKHOUSE_JDBC_URL:jdbc:clickhouse://localhost:8123/retailpulse}
+    user: ${CLICKHOUSE_USER:retailpulse}
+    password: ${CLICKHOUSE_PASSWORD}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never

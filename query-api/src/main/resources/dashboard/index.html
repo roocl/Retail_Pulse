@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RetailPulse · 实时交易看板</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <script type="module" src="/dashboard.js"></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/">Retail<span>Pulse</span><i></i></a><span class="tagline">每一分钟，读懂生意。</span></header>
+  <main>
+    <div class="heading"><div><p class="eyebrow">交易概览</p><h1>实时交易看板</h1><p class="muted">从支付到排名，关注已完成的分钟窗口。</p></div><div class="connection"><span id="status" role="status" aria-live="polite">正在连接…</span><small id="updated">尚未刷新</small></div></div>
+    <form id="filters" class="panel controls">
+      <label class="dataset">数据集<input id="dataset" name="dataset" value="retailpulse" required maxlength="128" autocomplete="off"></label>
+      <label>排名数量<select id="top-limit"><option>5</option><option selected>10</option><option>20</option><option>50</option><option>100</option></select></label>
+      <label class="check"><input id="auto-refresh" type="checkbox" checked>每 10 秒刷新</label>
+      <button type="submit" id="refresh">刷新数据 <span aria-hidden="true">↻</span></button>
+    </form>
+    <p id="error" class="error" role="alert" hidden></p>
+    <div class="section-title"><h2>最新分钟</h2><span id="window" class="muted">等待数据</span></div>
+    <section class="metrics" aria-label="最新分钟指标">
+      <article class="metric featured"><span>支付金额 · GMV</span><strong id="gmv">—</strong><small>该分钟的支付总额</small></article>
+      <article class="metric"><span>支付订单</span><strong id="paid-orders">—</strong><small>笔</small></article>
+      <article class="metric"><span>支付用户</span><strong id="paid-users">—</strong><small>该分钟内去重人数</small></article>
+      <article class="metric"><span>退款金额</span><strong id="refund-amount">—</strong><small id="refunds">— 笔退款</small></article>
+    </section>
+    <section class="panel ranking-panel"><div class="section-title"><div><h2>商品支付排名</h2><p class="muted">与最新分钟一致的商品榜单</p></div><span class="pill">按支付金额排序</span></div>
+      <div class="table-scroll"><table><thead><tr><th scope="col">排名</th><th scope="col">商品</th><th scope="col">支付金额</th><th scope="col">订单数</th><th scope="col">用户数</th><th scope="col">支付件数</th></tr></thead><tbody id="ranking"></tbody></table></div><p id="ranking-empty" class="empty">等待数据</p>
+    </section>
+    <section class="panel history-panel"><div class="section-title"><div><h2>分钟明细</h2><p class="muted">按窗口开始时间查询，结束时间不包含在内。时间以浏览器本地时区显示。</p></div></div>
+      <form id="range-filter" class="range-controls"><label>时间范围<select id="range-mode"><option value="recent">最新窗口前 1 小时</option><option value="custom">自定义（最多 24 小时）</option></select></label><label>开始<input id="from" type="datetime-local" disabled></label><label>结束<input id="to" type="datetime-local" disabled></label><button type="submit" class="secondary">查询明细</button></form>
+      <div class="table-scroll"><table><thead><tr><th scope="col">窗口开始</th><th scope="col">支付金额</th><th scope="col">订单数</th><th scope="col">用户数</th><th scope="col">支付件数</th><th scope="col">退款金额</th><th scope="col">退款数</th></tr></thead><tbody id="history"></tbody></table></div><p id="history-empty" class="empty">等待数据</p><p id="truncated" class="muted" hidden>结果已截断，请缩小时间范围后查询。</p>
+    </section>
+    <footer>RetailPulse <span>·</span> 窗口内用户数不能相加作为跨分钟去重人数。退款按发生时间归属窗口。</footer>
+  </main>
+</body>
+</html>
