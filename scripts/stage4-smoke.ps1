@@ -1,7 +1,13 @@
+param(
+    [string]$Dataset = "smoke-$([Guid]::NewGuid().ToString('N'))",
+    [long]$ResultVersion = 1,
+    [long]$WindowStart = 0,
+    [string]$OutputDirectory = (Join-Path $PSScriptRoot '../analytics-job/target/stage4-smoke'),
+    [switch]$InterruptStorage
+)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'flink-test-support.ps1')
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$outputDirectory = Join-Path $projectRoot 'analytics-job/target/stage4-smoke'
 New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
 $composeFiles = @('-f', (Join-Path $projectRoot 'infra/docker-compose.yml'), '-f', (Join-Path $projectRoot 'infra/flink-compose.yml'))
 $runId = [Guid]::NewGuid().ToString('N')
@@ -9,7 +15,8 @@ $inputTopic = "stage4-input-$runId"
 $deadTopic = "stage4-dead-$runId"
 $jobId = $null
 $createdTopics = @()
-$windowStart = 1768471200000L + ([long]([Convert]::ToUInt32($runId.Substring(0, 8), 16) % 1000000) * 60000L)
+$storageStopped = $false
+if ($windowStart -eq 0) { $windowStart = 1768471200000L + ([long]([Convert]::ToUInt32($runId.Substring(0, 8), 16) % 1000000) * 60000L) }
 $startedAt = [DateTime]::UtcNow.ToString('o')
 
 function New-Event {
@@ -41,10 +48,22 @@ try {
     $submission = Invoke-Docker -Arguments (@('compose') + $composeFiles + @('exec', '-T', 'jobmanager', 'flink', 'run', '-d',
         '/opt/flink/usrlib/analytics-job.jar', '--bootstrap-servers', 'kafka:29092', '--input-topic', $inputTopic,
         '--dead-letter-topic', $deadTopic, '--group-id', "stage4-$runId", '--parallelism', '2', '--top-n', '2',
-        '--out-of-order-ms', '30000', '--idle-timeout-ms', '1500', '--checkpoint-interval-ms', '1000'))
+        '--out-of-order-ms', '30000', '--idle-timeout-ms', '1500', '--checkpoint-interval-ms', '1000',
+        '--dataset', $Dataset, '--result-version', "$ResultVersion", '--jdbc-max-retries', '10'))
     $submission | Set-Content (Join-Path $outputDirectory 'submission.log') -Encoding UTF8
     if (($submission -join "`n") -notmatch 'JobID ([a-f0-9]{32})') { throw 'No submitted JobID.' }
     $jobId = $Matches[1]
+    if ($InterruptStorage) {
+        $deadline = [DateTime]::UtcNow.AddSeconds(60)
+        do {
+            $checkpoints = Read-JobApi "/jobs/$jobId/checkpoints"
+            if ($checkpoints.counts.completed -gt 0) { break }
+            Start-Sleep -Seconds 1
+        } while ([DateTime]::UtcNow -lt $deadline)
+        if ($checkpoints.counts.completed -eq 0) { throw 'No checkpoint before storage interruption.' }
+        Invoke-Docker -Arguments (@('compose') + $composeFiles + @('-f', "$projectRoot/infra/clickhouse-compose.yml", 'stop', 'clickhouse')) | Out-Null
+        $storageStopped = $true
+    }
     $a = New-Event a o1 u1 p1 PAYMENT_COMPLETED 12.30 1 0
     $fixtures = @($a, (New-Event b o2 u2 p2 PAYMENT_COMPLETED 30.00 1 59999), $a,
         (New-Event c o3 u1 p1 PAYMENT_COMPLETED 7.70 2 10000),
@@ -54,6 +73,18 @@ try {
         (New-Event advance '' u1 p1 PRODUCT_CLICK 0 1 152000))
     $fixtures | Set-Content (Join-Path $outputDirectory 'input.jsonl') -Encoding UTF8
     Send-Events $fixtures
+    if ($InterruptStorage) {
+        $deadline = [DateTime]::UtcNow.AddSeconds(30)
+        do {
+            $retryLog = Invoke-Docker -Arguments (@('compose') + $composeFiles + @('logs', '--since', $startedAt, '--no-color', 'taskmanager'))
+            if (($retryLog -join "`n") -match 'JDBC executeBatch error') { break }
+            Start-Sleep -Seconds 1
+        } while ([DateTime]::UtcNow -lt $deadline)
+        Invoke-Docker -Arguments (@('compose') + $composeFiles + @('-f', "$projectRoot/infra/clickhouse-compose.yml", 'start', 'clickhouse')) | Out-Null
+        $storageStopped = $false
+        if (($retryLog -join "`n") -notmatch 'JDBC executeBatch error') { throw 'No JDBC retry observed during storage interruption.' }
+        $retryLog | Set-Content (Join-Path $outputDirectory 'storage-retry.log')
+    }
     $deadline = [DateTime]::UtcNow.AddSeconds(90)
     do {
         $job = Read-JobApi "/jobs/$jobId"
@@ -102,6 +133,9 @@ try {
     $summary | Set-Content (Join-Path $outputDirectory 'summary.txt') -Encoding UTF8
     $summary
 } finally {
+    if ($storageStopped) {
+        Invoke-Docker -Arguments (@('compose') + $composeFiles + @('-f', "$projectRoot/infra/clickhouse-compose.yml", 'start', 'clickhouse')) | Out-Null
+    }
     if ($jobId) {
         Invoke-Docker -Arguments (@('compose') + $composeFiles + @('logs', '--since', $startedAt, '--no-color', 'taskmanager')) | Set-Content (Join-Path $outputDirectory 'taskmanager.log') -Encoding UTF8
         Read-JobApi "/jobs/$jobId/exceptions" | ConvertTo-Json -Depth 20 | Set-Content (Join-Path $outputDirectory 'exceptions.json') -Encoding UTF8

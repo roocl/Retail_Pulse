@@ -20,11 +20,11 @@ public final class AnalyticsJob {
     public static void main(String[] args) throws Exception {
         JobSettings settings = JobSettings.from(args, System.getenv());
         StreamExecutionEnvironment environment = StreamExecutionEnvironment.getExecutionEnvironment();
-        build(environment, settings);
+        build(environment, settings, StorageSettings.from(args, System.getenv()));
         environment.execute("RetailPulse commerce metrics");
     }
 
-    static void build(StreamExecutionEnvironment environment, JobSettings settings) {
+    static void build(StreamExecutionEnvironment environment, JobSettings settings, StorageSettings storage) {
         environment.setParallelism(settings.parallelism());
         environment.getConfig().disableGenericTypes();
         environment.getConfig().setAutoWatermarkInterval(200);
@@ -56,6 +56,10 @@ public final class AnalyticsJob {
                 .name("valid-json").uid("valid-json-v1")
                 .print("valid-event").name("valid-event-log").uid("valid-event-log-v1");
         var metrics = MetricsPipeline.attach(unique, settings.topN());
+        metrics.minutes().addSink(ClickHouseSinks.minutes(storage))
+                .name("minute-clickhouse").uid("minute-clickhouse-v1");
+        metrics.ranking().addSink(ClickHouseSinks.rankings(storage))
+                .name("ranking-clickhouse").uid("ranking-clickhouse-v1");
         unique.getSideOutput(DeduplicateEvents.LATE_EVENTS)
                 .union(metrics.minutes().getSideOutput(DeduplicateEvents.LATE_EVENTS),
                         metrics.products().getSideOutput(DeduplicateEvents.LATE_EVENTS))

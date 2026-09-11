@@ -1,0 +1,42 @@
+x-clickhouse-image: &clickhouse-image clickhouse/clickhouse-server:26.8@sha256:fa394da808cc53f76d0344429421d6c422a6ee85fe7450135c0e3cff4df9bcbb
+
+services:
+  clickhouse:
+    image: *clickhouse-image
+    env_file: ../.env
+    ports:
+      - "127.0.0.1:8123:8123"
+    environment:
+      CLICKHOUSE_DB: retailpulse
+      CLICKHOUSE_USER: retailpulse
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --user retailpulse --password \"$$CLICKHOUSE_PASSWORD\" --query 'SELECT 1' >/dev/null"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  clickhouse-init:
+    image: *clickhouse-image
+    env_file: ../.env
+    volumes:
+      - ./clickhouse/init.sql:/schema.sql:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command: ['exec clickhouse-client --host clickhouse --user retailpulse --password "$$CLICKHOUSE_PASSWORD" --multiquery < /schema.sql']
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+  jobmanager:
+    env_file: ../.env
+    environment:
+      CLICKHOUSE_JDBC_URL: jdbc:clickhouse://clickhouse:8123/retailpulse
+      CLICKHOUSE_USER: retailpulse
+    depends_on:
+      clickhouse-init:
+        condition: service_completed_successfully
+
+volumes:
+  clickhouse-data:
