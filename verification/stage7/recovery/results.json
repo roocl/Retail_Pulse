@@ -1,0 +1,158 @@
+[
+  {
+    "metric": {
+      "dataset": "stage7-4ec4c32f498c40ac9b78a96e93d24352",
+      "windowStart": "2026-01-15T10:00:00Z",
+      "windowEnd": "2026-01-15T10:01:00Z",
+      "resultVersion": "1",
+      "paidOrders": "3",
+      "paidUsers": "1",
+      "paidQuantity": "3",
+      "refunds": "0",
+      "gmv": "50.00",
+      "refundAmount": "0.00"
+    },
+    "restartToVerifiedMs": 23294.2718,
+    "ranking": {
+      "ready": true,
+      "products": [
+        {
+          "rank": "1",
+          "productId": "p2",
+          "gmv": "30.00",
+          "paidOrders": "1",
+          "paidUsers": "1",
+          "paidQuantity": "1"
+        },
+        {
+          "rank": "2",
+          "productId": "p1",
+          "gmv": "20.00",
+          "paidOrders": "2",
+          "paidUsers": "1",
+          "paidQuantity": "2"
+        }
+      ]
+    },
+    "service": "taskmanager",
+    "jobId": "407c1c40f5534bc3ebf618f0fd617692",
+    "restored": 1
+  },
+  {
+    "metric": {
+      "dataset": "stage7-4ec4c32f498c40ac9b78a96e93d24352",
+      "windowStart": "2026-01-15T10:03:00Z",
+      "windowEnd": "2026-01-15T10:04:00Z",
+      "resultVersion": "1",
+      "paidOrders": "3",
+      "paidUsers": "1",
+      "paidQuantity": "3",
+      "refunds": "0",
+      "gmv": "50.00",
+      "refundAmount": "0.00"
+    },
+    "restartToVerifiedMs": 27030.5577,
+    "ranking": {
+      "ready": true,
+      "products": [
+        {
+          "rank": "1",
+          "productId": "p2",
+          "gmv": "30.00",
+          "paidOrders": "1",
+          "paidUsers": "1",
+          "paidQuantity": "1"
+        },
+        {
+          "rank": "2",
+          "productId": "p1",
+          "gmv": "20.00",
+          "paidOrders": "2",
+          "paidUsers": "1",
+          "paidQuantity": "2"
+        }
+      ]
+    },
+    "service": "kafka",
+    "jobId": "407c1c40f5534bc3ebf618f0fd617692",
+    "restored": 1
+  },
+  {
+    "metric": {
+      "dataset": "stage7-4ec4c32f498c40ac9b78a96e93d24352",
+      "windowStart": "2026-01-15T10:06:00Z",
+      "windowEnd": "2026-01-15T10:07:00Z",
+      "resultVersion": "1",
+      "paidOrders": "3",
+      "paidUsers": "1",
+      "paidQuantity": "3",
+      "refunds": "0",
+      "gmv": "50.00",
+      "refundAmount": "0.00"
+    },
+    "restartToVerifiedMs": 16174.5148,
+    "ranking": {
+      "ready": true,
+      "products": [
+        {
+          "rank": "1",
+          "productId": "p2",
+          "gmv": "30.00",
+          "paidOrders": "1",
+          "paidUsers": "1",
+          "paidQuantity": "1"
+        },
+        {
+          "rank": "2",
+          "productId": "p1",
+          "gmv": "20.00",
+          "paidOrders": "2",
+          "paidUsers": "1",
+          "paidQuantity": "2"
+        }
+      ]
+    },
+    "service": "clickhouse",
+    "jobId": "407c1c40f5534bc3ebf618f0fd617692",
+    "restored": 1
+  },
+  {
+    "metric": {
+      "dataset": "stage7-4ec4c32f498c40ac9b78a96e93d24352",
+      "windowStart": "2026-01-15T10:09:00Z",
+      "windowEnd": "2026-01-15T10:10:00Z",
+      "resultVersion": "1",
+      "paidOrders": "3",
+      "paidUsers": "1",
+      "paidQuantity": "3",
+      "refunds": "0",
+      "gmv": "50.00",
+      "refundAmount": "0.00"
+    },
+    "restartToVerifiedMs": 38165.1517,
+    "ranking": {
+      "ready": true,
+      "products": [
+        {
+          "rank": "1",
+          "productId": "p2",
+          "gmv": "30.00",
+          "paidOrders": "1",
+          "paidUsers": "1",
+          "paidQuantity": "1"
+        },
+        {
+          "rank": "2",
+          "productId": "p1",
+          "gmv": "20.00",
+          "paidOrders": "2",
+          "paidUsers": "1",
+          "paidQuantity": "2"
+        }
+      ]
+    },
+    "service": "jobmanager",
+    "jobId": "6b4eef9561151e3179017fb7d9e8fc95",
+    "restored": 1
+  }
+]

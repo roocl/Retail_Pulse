@@ -3,13 +3,21 @@ x-clickhouse-image: &clickhouse-image clickhouse/clickhouse-server:26.8@sha256:f
 services:
   clickhouse:
     image: *clickhouse-image
-    env_file: ../.env
-    ports:
-      - "127.0.0.1:8123:8123"
     environment:
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?Set CLICKHOUSE_PASSWORD in .env}
       CLICKHOUSE_DB: retailpulse
       CLICKHOUSE_USER: retailpulse
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    mem_limit: 2048m
+    cpus: 2
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - "127.0.0.1:8123:8123"
     volumes:
       - clickhouse-data:/var/lib/clickhouse
     healthcheck:
@@ -20,7 +28,8 @@ services:
 
   clickhouse-init:
     image: *clickhouse-image
-    env_file: ../.env
+    environment:
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?Set CLICKHOUSE_PASSWORD in .env}
     volumes:
       - ./clickhouse/init.sql:/schema.sql:ro
     entrypoint: ["/bin/sh", "-c"]
@@ -30,8 +39,8 @@ services:
         condition: service_healthy
 
   jobmanager:
-    env_file: ../.env
     environment:
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?Set CLICKHOUSE_PASSWORD in .env}
       CLICKHOUSE_JDBC_URL: jdbc:clickhouse://clickhouse:8123/retailpulse
       CLICKHOUSE_USER: retailpulse
     depends_on:

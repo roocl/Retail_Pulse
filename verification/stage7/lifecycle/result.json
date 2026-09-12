@@ -1,0 +1,19 @@
+{
+  "dataset": "demo-8c99f760d6fa4e5fb24edf0f6ec4d38f",
+  "repeatedUpPreservedJob": true,
+  "restoredJob": "861274781b705a8e97463349fbd32265",
+  "beforeJob": "610cdff3814ec39ae91141d3e09e23e2",
+  "savepoint": "file:/opt/flink/checkpoints/savepoint-610cdf-06f71913af82",
+  "metric": {
+    "dataset": "demo-8c99f760d6fa4e5fb24edf0f6ec4d38f",
+    "windowStart": "2026-01-15T10:13:00Z",
+    "windowEnd": "2026-01-15T10:14:00Z",
+    "resultVersion": "1",
+    "paidOrders": "1",
+    "paidUsers": "1",
+    "paidQuantity": "3",
+    "refunds": "1",
+    "gmv": "462.24",
+    "refundAmount": "1489.38"
+  }
+}

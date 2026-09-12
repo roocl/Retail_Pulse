@@ -1,0 +1,54 @@
+services:
+  query-api:
+    image: retailpulse/query-api:local
+    build:
+      context: ..
+      target: query
+    environment:
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?Set CLICKHOUSE_PASSWORD in .env}
+      CLICKHOUSE_JDBC_URL: jdbc:clickhouse://clickhouse:8123/retailpulse
+      CLICKHOUSE_USER: retailpulse
+      SERVER_ADDRESS: 0.0.0.0
+    ports:
+      - "127.0.0.1:8080:8080"
+    mem_limit: 512m
+    cpus: 1
+    restart: unless-stopped
+    depends_on:
+      clickhouse-init:
+        condition: service_completed_successfully
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  event-producer:
+    image: retailpulse/event-producer:local
+    build:
+      context: ..
+      target: producer
+    profiles: [tools]
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    mem_limit: 384m
+    cpus: 1
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    logging: *logging
+
+  event-consumer:
+    image: retailpulse/event-consumer:local
+    build:
+      context: ..
+      target: consumer
+    profiles: [tools]
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    mem_limit: 384m
+    cpus: 1
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    logging: *logging

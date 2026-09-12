@@ -1,0 +1,5 @@
+{
+  "command": "./scripts/stage7-smoke.ps1 -SkipBuild -Parallelism 2 -IdleTimeoutMs 1500",
+  "observation": "Minute total 50.00; late transaction and late product output; complete ranking not observed. Timing-sensitive, outside default parallelism recovery baseline.",
+  "dataset": "stage7-dc227dad2dbe44028865d9d8ecd0c396"
+}

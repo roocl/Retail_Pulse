@@ -1,5 +1,7 @@
 package com.retailpulse.common;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
@@ -14,7 +16,7 @@ public record CommerceEvent(
         EventType eventType,
         BigDecimal amount,
         int quantity,
-        Instant eventTime
+        @JsonFormat(shape = JsonFormat.Shape.STRING) Instant eventTime
 ) {
     public static final int CURRENT_SCHEMA_VERSION = 2;
 

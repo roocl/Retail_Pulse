@@ -1,0 +1,11 @@
+{
+  "measuredSamples": 3,
+  "scope": "Local single-active-partition synthetic payment batches; not sustained capacity, per-event latency or a production SLA.",
+  "maxBatchVisibleMs": 2533.2488,
+  "minBatchVisibleMs": 2486.6652,
+  "dataset": "bench-530461c1052e440eaecd139b4c08f076",
+  "jobId": "29a4fca70f346b30771343cf2c604bcb",
+  "aggregateVisiblePaymentsPerSecond": 1991.8523412770219,
+  "meanBatchVisibleMs": 2510.2262333333333,
+  "payments": 15000
+}

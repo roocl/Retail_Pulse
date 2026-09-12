@@ -1,5 +1,8 @@
 package com.retailpulse.producer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.retailpulse.common.CommerceEvent;
+import com.retailpulse.common.EventType;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -12,7 +15,10 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,6 +54,23 @@ class ProducerConfigurationTest {
             assertEquals("10000", values.get(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG).toString());
             assertEquals("10000", values.get(ProducerConfig.MAX_BLOCK_MS_CONFIG).toString());
             assertEquals(100, context.getBean(GenerationProperties.class).count());
+        });
+    }
+
+    @Test
+    void kafkaSerializerPreservesTheIsoEventTimeContract() {
+        runner.run(context -> {
+            var values = context.getBean(ProducerFactory.class).getConfigurationProperties();
+            assertEquals(JsonSerializer.class, values.get(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG));
+            var event = new CommerceEvent(CommerceEvent.CURRENT_SCHEMA_VERSION, "event-1", "order-1", "user-1", "product-1",
+                    EventType.PAYMENT_COMPLETED, new BigDecimal("12.30"), 1,
+                    Instant.parse("2026-01-15T10:00:00.123Z"));
+            try (var serializer = new JsonSerializer<CommerceEvent>()) {
+                serializer.configure(values, false);
+                var wire = new ObjectMapper().readTree(serializer.serialize("commerce-events", event));
+                assertTrue(wire.get("eventTime").isTextual());
+                assertEquals("2026-01-15T10:00:00.123Z", wire.get("eventTime").textValue());
+            }
         });
     }
 

@@ -1,0 +1,60 @@
+{
+  "focusedTestsAndPackaging": {
+    "command": "mvn -pl event-producer,analytics-job,query-api -am -Dtest=CommerceEventJsonTest,ProducerConfigurationTest,EventParserTest,AnalyticsJobTest,JobSettingsTest,QueryUnavailableTest -Dsurefire.failIfNoSpecifiedTests=false package --no-transfer-progress",
+    "results": [
+      {
+        "name": "com.retailpulse.common.CommerceEventJsonTest",
+        "tests": "6",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "0.287"
+      },
+      {
+        "name": "com.retailpulse.producer.ProducerConfigurationTest",
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "1.085"
+      },
+      {
+        "name": "com.retailpulse.analytics.AnalyticsJobTest",
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "0.623"
+      },
+      {
+        "name": "com.retailpulse.analytics.EventParserTest",
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "0.096"
+      },
+      {
+        "name": "com.retailpulse.analytics.JobSettingsTest",
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "0.018"
+      },
+      {
+        "name": "com.retailpulse.query.QueryUnavailableTest",
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "14.419"
+      }
+    ]
+  },
+  "consumerPackaging": {
+    "command": "mvn -pl event-consumer -am -DskipTests package --no-transfer-progress",
+    "result": "PASS"
+  },
+  "fullReactorTests": "Not run; focused verification only."
+}

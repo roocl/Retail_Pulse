@@ -1,0 +1,14 @@
+**
+!Dockerfile
+!analytics-job/
+!analytics-job/target/
+!analytics-job/target/analytics-job-0.1.0-SNAPSHOT.jar
+!event-producer/
+!event-producer/target/
+!event-producer/target/event-producer-0.1.0-SNAPSHOT.jar
+!event-consumer/
+!event-consumer/target/
+!event-consumer/target/event-consumer-0.1.0-SNAPSHOT.jar
+!query-api/
+!query-api/target/
+!query-api/target/query-api-0.1.0-SNAPSHOT.jar

@@ -1,0 +1,82 @@
+{
+  "sample": 2,
+  "inputBytes": 1267492,
+  "visibleMs": 2510.7647,
+  "metric": {
+    "dataset": "bench-530461c1052e440eaecd139b4c08f076",
+    "windowStart": "2026-01-15T10:06:00Z",
+    "windowEnd": "2026-01-15T10:07:00Z",
+    "resultVersion": "1",
+    "paidOrders": "5000",
+    "paidUsers": "100",
+    "paidQuantity": "5000",
+    "refunds": "0",
+    "gmv": "5000.00",
+    "refundAmount": "0.00"
+  },
+  "acknowledgedMs": 2049.3276,
+  "acknowledgedRecordsPerSecond": 2440.3126176605438,
+  "payments": 5000,
+  "warmup": false,
+  "records": 5001,
+  "startedUtc": "2026-09-12T00:43:07.4124120+00:00",
+  "visiblePaymentsPerSecond": 1991.4251622224892,
+  "resources": [
+    {
+      "BlockIO": "317MB / 58.8MB",
+      "CPUPerc": "2.67%",
+      "Container": "b4f076542a2c818eb5d36091a8e607f5fb6efaa22545293cc579768adfc93996",
+      "ID": "b4f076542a2c",
+      "MemPerc": "18.36%",
+      "MemUsage": "376MiB / 2GiB",
+      "Name": "infra-clickhouse-1",
+      "NetIO": "160kB / 158kB",
+      "PIDs": "235"
+    },
+    {
+      "BlockIO": "82.5MB / 115MB",
+      "CPUPerc": "3.48%",
+      "Container": "1a2c3f0778fe73c270b033cd7372adba8caa216ce97ad96aea6b0a95d875338d",
+      "ID": "1a2c3f0778fe",
+      "MemPerc": "26.90%",
+      "MemUsage": "413.2MiB / 1.5GiB",
+      "Name": "infra-jobmanager-1",
+      "NetIO": "3.88MB / 76.3MB",
+      "PIDs": "73"
+    },
+    {
+      "BlockIO": "70.9MB / 1.09MB",
+      "CPUPerc": "0.05%",
+      "Container": "21c90697c8d454545738887fb9d29f276382242aaa6abeaf49bc20e20ec545b5",
+      "ID": "21c90697c8d4",
+      "MemPerc": "35.08%",
+      "MemUsage": "179.6MiB / 512MiB",
+      "Name": "infra-query-api-1",
+      "NetIO": "344kB / 308kB",
+      "PIDs": "30"
+    },
+    {
+      "BlockIO": "25.6MB / 134MB",
+      "CPUPerc": "3.39%",
+      "Container": "a08b327237b6ded28be1b3d1dc692363bf6da6ca0bda9c99aa4f9fce41f53f96",
+      "ID": "a08b327237b6",
+      "MemPerc": "34.59%",
+      "MemUsage": "708.4MiB / 2GiB",
+      "Name": "infra-taskmanager-1",
+      "NetIO": "118MB / 10.2MB",
+      "PIDs": "99"
+    },
+    {
+      "BlockIO": "72.7MB / 4.13MB",
+      "CPUPerc": "1.65%",
+      "Container": "91e3730909eb8368b91b95005eeb8e6b2ddf67877376c679c55b15f0a7e8d676",
+      "ID": "91e3730909eb",
+      "MemPerc": "28.05%",
+      "MemUsage": "430.9MiB / 1.5GiB",
+      "Name": "retailpulse-kafka",
+      "NetIO": "93.6kB / 2.92MB",
+      "PIDs": "95"
+    }
+  ],
+  "inputSha256": "55D599A89E178778457E72B0A36B5AB0FFBFAE154885CC5CB0EF29406573B5B4"
+}

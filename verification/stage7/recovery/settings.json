@@ -1,0 +1,14 @@
+{
+  "parallelism": 1,
+  "group-id": "stage7-4ec4c32f498c40ac9b78a96e93d24352",
+  "input-topic": "stage7-4ec4c32f498c40ac9b78a96e93d24352",
+  "top-n": 2,
+  "bootstrap-servers": "kafka:29092",
+  "dataset": "stage7-4ec4c32f498c40ac9b78a96e93d24352",
+  "result-version": 1,
+  "dead-letter-topic": "stage7-dead-4ec4c32f498c40ac9b78a96e93d24352",
+  "idle-timeout-ms": 10000,
+  "jdbc-max-retries": 10,
+  "checkpoint-interval-ms": 1000,
+  "out-of-order-ms": 30000
+}

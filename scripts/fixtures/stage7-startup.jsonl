@@ -1,0 +1,2 @@
+{"schemaVersion":2,"eventId":"startup-payment","orderId":"startup-order","userId":"u1","productId":"p1","eventType":"PAYMENT_COMPLETED","amount":25.00,"quantity":1,"eventTime":"2026-01-15T10:00:00Z"}
+{"schemaVersion":2,"eventId":"startup-marker","orderId":null,"userId":"u1","productId":"p1","eventType":"PRODUCT_CLICK","amount":0.00,"quantity":1,"eventTime":"2026-01-15T10:02:32Z"}

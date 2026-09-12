@@ -1,7 +1,6 @@
-# Stage 3 session cluster. Use together with docker-compose.yml after mvn clean verify.
 services:
   flink-state-init:
-    image: flink:1.20.3-scala_2.12-java17
+    image: retailpulse/analytics:local
     user: "0:0"
     entrypoint: ["/bin/sh", "-c"]
     command: ["chown flink:flink /state"]
@@ -9,7 +8,23 @@ services:
       - flink-checkpoints:/state
 
   jobmanager:
-    image: flink:1.20.3-scala_2.12-java17
+    image: retailpulse/analytics:local
+    build:
+      context: ..
+      target: analytics
+    mem_limit: 1536m
+    cpus: 1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8081/overview >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
     command: jobmanager
     ports:
       - "127.0.0.1:8081:8081"
@@ -17,28 +32,41 @@ services:
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: jobmanager
         parallelism.default: 1
+        jobmanager.memory.process.size: 1024m
+        heartbeat.interval: 2000
+        heartbeat.timeout: 15000
     volumes:
-      - ../analytics-job/target/analytics-job-0.1.0-SNAPSHOT.jar:/opt/flink/usrlib/analytics-job.jar:ro
       - flink-checkpoints:/opt/flink/checkpoints
     depends_on:
       flink-state-init:
         condition: service_completed_successfully
-      kafka:
-        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
 
   taskmanager:
-    image: flink:1.20.3-scala_2.12-java17
+    image: retailpulse/analytics:local
+    mem_limit: 2048m
+    cpus: 2
+    restart: unless-stopped
+    logging: *logging
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://jobmanager:8081/taskmanagers | grep -q id"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
     command: taskmanager
     environment:
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 2
         taskmanager.memory.process.size: 1536m
+        heartbeat.interval: 2000
+        heartbeat.timeout: 15000
     volumes:
       - flink-checkpoints:/opt/flink/checkpoints
     depends_on:
       jobmanager:
-        condition: service_started
+        condition: service_healthy
 
 volumes:
   flink-checkpoints:

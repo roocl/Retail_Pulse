@@ -1,0 +1,201 @@
+{
+  "images": [
+    {
+      "ID": "sha256:fa394da808cc53f76d0344429421d6c422a6ee85fe7450135c0e3cff4df9bcbb",
+      "ContainerName": "infra-clickhouse-init-1",
+      "Repository": "clickhouse/clickhouse-server",
+      "Tag": "",
+      "Platform": "linux/amd64",
+      "Size": 278016787,
+      "Created": "2026-09-01T09:35:02.603587965Z",
+      "LastTagTime": "2026-09-11T07:45:23.530387387Z"
+    },
+    {
+      "ID": "sha256:22c4bea38875408e8f9fe52aca8e3a6ee67f9aa0090db59af99a2f6647558db5",
+      "ContainerName": "retailpulse-kafka-init",
+      "Repository": "apache/kafka",
+      "Tag": "",
+      "Platform": "linux/amd64",
+      "Size": 208659865,
+      "Created": "2024-10-17T18:36:44.683877906Z",
+      "LastTagTime": "2026-08-27T23:42:53.473876908Z"
+    },
+    {
+      "ID": "sha256:4d79dd8c2238f53f3d4c922f43da0d0f8eacef9d7473bde6045c5b6d1aa50323",
+      "ContainerName": "infra-query-api-1",
+      "Repository": "retailpulse/query-api",
+      "Tag": "local",
+      "Platform": "linux/amd64",
+      "Size": 126457565,
+      "Created": "2026-09-11T13:53:03.649151875Z",
+      "LastTagTime": "2026-09-12T00:39:05.214868512Z"
+    },
+    {
+      "ID": "sha256:fa394da808cc53f76d0344429421d6c422a6ee85fe7450135c0e3cff4df9bcbb",
+      "ContainerName": "infra-clickhouse-1",
+      "Repository": "clickhouse/clickhouse-server",
+      "Tag": "",
+      "Platform": "linux/amd64",
+      "Size": 278016787,
+      "Created": "2026-09-01T09:35:02.603587965Z",
+      "LastTagTime": "2026-09-11T07:45:23.530387387Z"
+    },
+    {
+      "ID": "sha256:1fdf0c77775207d63564ceaf807a0b0555d3c983f8e50dc7aa90bdc5063ca103",
+      "ContainerName": "infra-jobmanager-1",
+      "Repository": "retailpulse/analytics",
+      "Tag": "local",
+      "Platform": "linux/amd64",
+      "Size": 613673994,
+      "Created": "2026-09-12T00:39:04.192510591Z",
+      "LastTagTime": "2026-09-12T00:39:06.564414861Z"
+    },
+    {
+      "ID": "sha256:1fdf0c77775207d63564ceaf807a0b0555d3c983f8e50dc7aa90bdc5063ca103",
+      "ContainerName": "infra-taskmanager-1",
+      "Repository": "retailpulse/analytics",
+      "Tag": "local",
+      "Platform": "linux/amd64",
+      "Size": 613673994,
+      "Created": "2026-09-12T00:39:04.192510591Z",
+      "LastTagTime": "2026-09-12T00:39:06.564414861Z"
+    },
+    {
+      "ID": "sha256:1fdf0c77775207d63564ceaf807a0b0555d3c983f8e50dc7aa90bdc5063ca103",
+      "ContainerName": "infra-flink-state-init-1",
+      "Repository": "retailpulse/analytics",
+      "Tag": "local",
+      "Platform": "linux/amd64",
+      "Size": 613673994,
+      "Created": "2026-09-12T00:39:04.192510591Z",
+      "LastTagTime": "2026-09-12T00:39:06.564414861Z"
+    },
+    {
+      "ID": "sha256:22c4bea38875408e8f9fe52aca8e3a6ee67f9aa0090db59af99a2f6647558db5",
+      "ContainerName": "retailpulse-kafka",
+      "Repository": "apache/kafka",
+      "Tag": "",
+      "Platform": "linux/amd64",
+      "Size": 208659865,
+      "Created": "2024-10-17T18:36:44.683877906Z",
+      "LastTagTime": "2026-08-27T23:42:53.473876908Z"
+    },
+    null
+  ],
+  "resources": [
+    "/infra-clickhouse-1 2147483648 2000000000",
+    "/infra-jobmanager-1 1610612736 1000000000",
+    "/infra-query-api-1 536870912 1000000000",
+    "/infra-taskmanager-1 2147483648 2000000000",
+    "/retailpulse-kafka 1610612736 2000000000"
+  ],
+  "settings": {
+    "parallelism": 1,
+    "group-id": "bench-530461c1052e440eaecd139b4c08f076",
+    "input-topic": "bench-530461c1052e440eaecd139b4c08f076",
+    "top-n": 10,
+    "bootstrap-servers": "kafka:29092",
+    "dataset": "bench-530461c1052e440eaecd139b4c08f076",
+    "result-version": 1,
+    "dead-letter-topic": "bench-dead-530461c1052e440eaecd139b4c08f076",
+    "idle-timeout-ms": 10000,
+    "checkpoint-interval-ms": 1000,
+    "out-of-order-ms": 30000
+  },
+  "measurement": "Batch wall-clock: Kafka CLI start to producer exit and exact aggregate visible through HTTP; includes CLI/JVM startup, client piping, watermark, sink flush and polling. Historical eventTime is not used for latency.",
+  "artifactHashes": [
+    {
+      "path": "analytics-job\\target\\analytics-job-0.1.0-SNAPSHOT.jar",
+      "sha256": "B1D6E02449A389310F6E836F14F7D55141D547585947B069BEA02DE646BE48BF"
+    },
+    {
+      "path": "query-api\\target\\query-api-0.1.0-SNAPSHOT.jar",
+      "sha256": "5D5B9587AB21EDE6ACE8F3142206FE18299D0BD5664A7332FCB8AAAF0B658D71"
+    }
+  ],
+  "sourcePartitions": 3,
+  "count": 5000,
+  "gitCommit": "424afce056caab96a8a32501f789443ddbd2c4e4",
+  "powershell": "7.6.5",
+  "sourceHashes": [
+    {
+      "path": "scripts\\stack-support.ps1",
+      "sha256": "CC93C6AB1A75BCC666AEDF009150C76319AB6F2B97F4266F768110BC185CED9E"
+    },
+    {
+      "path": "scripts\\stack.ps1",
+      "sha256": "4451CE1F3AE6378747F15F4427DB4D44FED15B5738F06B19C7227813B999E3A5"
+    },
+    {
+      "path": "scripts\\stage7-benchmark.ps1",
+      "sha256": "7530862906188B5C6BCB798BE3A099BACDE70E1AB55A2CF7A526208929E9D7C6"
+    },
+    {
+      "path": "scripts\\stage7-clean-start.ps1",
+      "sha256": "A59DC2EE5E2E26F3B3F276E07A81252F8F5DAD996CA7DB80FEEC56626C407ECA"
+    },
+    {
+      "path": "scripts\\stage7-lifecycle.ps1",
+      "sha256": "A4139C58C716C68807BAE512928D8FA6ABDA3B4236B683B7C356E3150FF2830F"
+    },
+    {
+      "path": "scripts\\stage7-smoke.ps1",
+      "sha256": "5DD2265C1DA026D30DD554F75A63AADC67EA7FE2ED69AD68EA791722B8C3499B"
+    },
+    {
+      "path": "infra\\app-compose.yml",
+      "sha256": "8FF866F78EF83D9FF771625F3C19D46A43703DA8031928108A4AC915E77D7CA1"
+    },
+    {
+      "path": "infra\\clickhouse-compose.yml",
+      "sha256": "12CE136ABA64281BC428288DF27124F3DE8A246A0C1AB56C43CB9645E8DFF527"
+    },
+    {
+      "path": "infra\\docker-compose.yml",
+      "sha256": "BB970BBD7CB7F2C6C872137C6C4073A302DBE8C2D72C7AC14908A84B3456B1F1"
+    },
+    {
+      "path": "infra\\flink-compose.yml",
+      "sha256": "5CC1B42069EE061F67F8AA089AD498BF29249E611874F50F736D44713C3325CF"
+    },
+    {
+      "path": "Dockerfile",
+      "sha256": "1DEB4EFC45D9FE039A3B53355BD2F7CBD1CA20762CE0E773202BE1E0442A9249"
+    },
+    {
+      "path": ".dockerignore",
+      "sha256": "A93D3E2A848681CC20FF7E48F79B3648DDCCF9AA971AEA2674CD78A21AD3F9E0"
+    }
+  ],
+  "utc": "2026-09-12T00:42:35.9526177+00:00",
+  "docker": {
+    "ServerVersion": "29.3.1",
+    "NCPU": 16,
+    "MemTotal": 4037214208,
+    "OperatingSystem": "Docker Desktop",
+    "Architecture": "x86_64"
+  },
+  "compose": "5.1.1",
+  "worktree": [
+    " M common/src/main/java/com/retailpulse/common/CommerceEvent.java",
+    " M common/src/test/java/com/retailpulse/common/CommerceEventJsonTest.java",
+    " M event-producer/src/test/java/com/retailpulse/producer/ProducerConfigurationTest.java",
+    " M infra/clickhouse-compose.yml",
+    " M infra/docker-compose.yml",
+    " M infra/flink-compose.yml",
+    "?? .dockerignore",
+    "?? Dockerfile",
+    "?? infra/app-compose.yml",
+    "?? scripts/fixtures/stage7-startup.jsonl",
+    "?? scripts/stack-support.ps1",
+    "?? scripts/stack.ps1",
+    "?? scripts/stage7-benchmark.ps1",
+    "?? scripts/stage7-clean-start.ps1",
+    "?? scripts/stage7-lifecycle.ps1",
+    "?? scripts/stage7-smoke.ps1",
+    "?? verification/"
+  ],
+  "activeFixturePartitions": 1,
+  "warmupCount": 500,
+  "samples": 3
+}

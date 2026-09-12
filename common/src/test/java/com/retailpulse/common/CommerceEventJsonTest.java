@@ -1,7 +1,6 @@
 package com.retailpulse.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -14,8 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommerceEventJsonTest {
     private final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            .registerModule(new JavaTimeModule());
 
     @ParameterizedTest
     @EnumSource(EventType.class)

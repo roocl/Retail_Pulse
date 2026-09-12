@@ -1,0 +1,20 @@
+{
+  "project": "retailpulse-clean-5eccadceafdb4e808a8ed0adfe712876",
+  "initialStatus": 204,
+  "fixtureSha256": "D0116F5C22ADAC77747F612D3650A3654AC64822E2CCA0B3F48C1B6E70746B48",
+  "volumes": "New isolated Compose project volumes; removed after test.",
+  "metric": {
+    "dataset": "clean-5eccadceafdb4e808a8ed0adfe712876",
+    "windowStart": "2026-01-15T10:00:00Z",
+    "windowEnd": "2026-01-15T10:01:00Z",
+    "resultVersion": "1",
+    "paidOrders": "1",
+    "paidUsers": "1",
+    "paidQuantity": "1",
+    "refunds": "0",
+    "gmv": "25.00",
+    "refundAmount": "0.00"
+  },
+  "jobId": "1b2418e708d38f04b3d079c9faf07936",
+  "dataset": "clean-5eccadceafdb4e808a8ed0adfe712876"
+}
