@@ -1,0 +1,10 @@
+**
+!conf/
+!conf/**
+!target/
+!target/customer-analytics-0.1.0-SNAPSHOT.jar
+!target/customer-analytics-0.1.0-SNAPSHOT-tests.jar
+!target/lib/
+!target/lib/**
+!target/test-lib/
+!target/test-lib/junit-platform-console-standalone-1.10.5.jar

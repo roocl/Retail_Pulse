@@ -1,0 +1,77 @@
+name: retailpulse-offline
+
+services:
+  mysql:
+    image: mysql:8.4.6@sha256:869218921e61d6c3c89820955d63cca42971f0e3e6c1e2792247bbd944ebc6e9
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: metastore
+      MYSQL_USER: hive
+      MYSQL_PASSWORD: ${OFFLINE_MYSQL_PASSWORD:?Set OFFLINE_MYSQL_PASSWORD in .env}
+    command: ["--innodb-buffer-pool-size=128M", "--max-connections=30", "--performance-schema=OFF"]
+    mem_limit: 512m
+    cpus: 1
+    volumes:
+      - offline-mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -uhive -e 'SELECT 1' metastore >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  metastore-init:
+    image: retailpulse/metastore:local
+    build:
+      context: ../customer-analytics
+      target: hive
+    environment: &metastore-environment
+      MYSQL_PASSWORD: ${OFFLINE_MYSQL_PASSWORD:?Set OFFLINE_MYSQL_PASSWORD in .env}
+    entrypoint: ["/opt/hive/bin/schematool", "-dbType", "mysql", "-initOrUpgradeSchema"]
+    mem_limit: 768m
+    volumes: &warehouse-volume
+      - offline-warehouse:/warehouse
+    depends_on:
+      mysql:
+        condition: service_healthy
+    logging: *logging
+
+  metastore:
+    image: retailpulse/metastore:local
+    environment: *metastore-environment
+    mem_limit: 768m
+    cpus: 1
+    volumes: *warehouse-volume
+    depends_on:
+      metastore-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/9083"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    logging: *logging
+
+  spark:
+    image: retailpulse/offline:local
+    build:
+      context: ../customer-analytics
+      target: spark
+    profiles: [jobs]
+    mem_limit: 2304m
+    cpus: 2
+    volumes:
+      - offline-warehouse:/warehouse
+      - ../customer-analytics/data:/data
+    depends_on:
+      metastore:
+        condition: service_healthy
+    logging: *logging
+
+volumes:
+  offline-mysql:
+  offline-warehouse:

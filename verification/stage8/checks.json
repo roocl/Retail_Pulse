@@ -1,0 +1,21 @@
+{
+  "scope": "Three distinct JUnit tests; two ingest tests also run on host. Full reactor tests not run.",
+  "host": {
+    "errors": 0,
+    "failures": 0,
+    "command": "mvn -pl customer-analytics -am -Dtest=RetailIngestorTest -Dsurefire.failIfNoSpecifiedTests=false package --no-transfer-progress",
+    "tests": 2
+  },
+  "runtime": {
+    "cases": [
+      "com.retailpulse.offline.WarehouseTest.rulesAndPublicationSurviveRepeatAndIncompleteBuild()",
+      "com.retailpulse.offline.RetailIngestorTest.invalidColumnsDoNotPublishAnInputBatch()",
+      "com.retailpulse.offline.RetailIngestorTest.repeatedImportPreservesSourceRowsAndOriginalBytes()"
+    ],
+    "failures": 0,
+    "skipped": 0,
+    "errors": 0,
+    "tests": 3,
+    "command": "./scripts/offline.ps1 test"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "sourceHash": "43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d",
+  "images": [
+    "[retailpulse/offline:local] sha256:381dd54c2f4269a342c6851ba812b9c54c1262165c675316d029ee0361f12360",
+    "[retailpulse/metastore:local] sha256:330364e4007f40785ee7484957c3e70f3177e19251ac1016a40e67d05d0640ce",
+    "[mysql:8.4.6] sha256:869218921e61d6c3c89820955d63cca42971f0e3e6c1e2792247bbd944ebc6e9"
+  ],
+  "docker": "29.7.2 CPUs=16 Memory=4037218304",
+  "command": "./scripts/stage8-smoke.ps1 -SourceHash 43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d",
+  "repeatedBuild": true,
+  "release": "e773b85bff14bf7ebe067526726acd3bacfb4ee80773a1d48adb3b0efb34286c",
+  "metadataRestart": true,
+  "partitionPruning": true,
+  "reimport": true
+}

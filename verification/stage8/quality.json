@@ -1,0 +1,88 @@
+{
+  "source" : {
+    "source" : "https://archive.ics.uci.edu/dataset/352/online+retail",
+    "download_url" : "https://archive.ics.uci.edu/static/public/352/online+retail.zip",
+    "citation" : "Chen, D. (2015). Online Retail. DOI:10.24432/C5BW33",
+    "license" : "CC BY 4.0",
+    "source_sha256" : "43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d",
+    "rows_sha256" : "3073dcb971703c5d17a1ed1063c6ea930b20cc17abde11b3d27f510c41b67aa9",
+    "sheet" : "Online Retail",
+    "rows" : 541909,
+    "currency" : "GBP",
+    "timezone" : "unspecified local wall time",
+    "ingest_version" : 2
+  },
+  "input_profile" : {
+    "first_local_time" : "2010-12-01 08:26:00",
+    "last_local_time" : "2011-12-09 12:50:00",
+    "missing_customer_rows" : 135080,
+    "missing_description_rows" : 1454,
+    "negative_quantity_rows" : 10624,
+    "nonpositive_price_rows" : 2517,
+    "cancellation_rows" : 9288,
+    "invoices" : 25900,
+    "products" : 4070,
+    "identified_customers" : 4372
+  },
+  "reconciliation" : {
+    "raw" : {
+      "rows" : 541909,
+      "distinct_rows" : 541909,
+      "amount" : "9747747.934000"
+    },
+    "audit" : {
+      "rows" : 541909,
+      "distinct_rows" : 541909,
+      "amount" : "9747747.934000"
+    },
+    "passed" : true
+  },
+  "purchases" : {
+    "lines" : 524878,
+    "orders" : 19960,
+    "gross_amount" : "10642110.804000"
+  },
+  "cancellations" : {
+    "lines" : 9251,
+    "invoices" : 3836,
+    "signed_amount" : "-893979.730000"
+  },
+  "dimension_join" : {
+    "fact_rows" : 534129,
+    "product_matches" : 534129,
+    "customer_matches" : 401564
+  },
+  "dispositions" : [ {
+    "disposition" : "CANCELLATION",
+    "reason" : null,
+    "rows" : 9251,
+    "signed_amount" : "-893979.730000",
+    "unquantified_amount_rows" : 0,
+    "missing_customer_rows" : 379
+  }, {
+    "disposition" : "EXCLUDED_DUPLICATE",
+    "reason" : "SUSPECTED_EXACT_DUPLICATE",
+    "rows" : 5268,
+    "signed_amount" : "21740.980000",
+    "unquantified_amount_rows" : 0,
+    "missing_customer_rows" : 43
+  }, {
+    "disposition" : "PURCHASE",
+    "reason" : null,
+    "rows" : 524878,
+    "signed_amount" : "10642110.804000",
+    "unquantified_amount_rows" : 0,
+    "missing_customer_rows" : 132186
+  }, {
+    "disposition" : "QUARANTINED",
+    "reason" : "NONPOSITIVE_OR_INVALID_PRICE",
+    "rows" : 2512,
+    "signed_amount" : "-22124.120000",
+    "unquantified_amount_rows" : 0,
+    "missing_customer_rows" : 2472
+  } ],
+  "dimensions" : {
+    "customers" : 4371,
+    "products" : 3938
+  }
+}

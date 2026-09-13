@@ -1,0 +1,8 @@
+{
+  "java": "openjdk version \"17.0.17\" 2025-10-21\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)",
+  "spark": "4.1.0",
+  "dependencies": "../../customer-analytics/pom.xml",
+  "images": "result.json",
+  "application_jar_sha256": "35ac357ca96bb9f62e9403f9c7c6c7bf3f1b409021d5cf4ccdb605fa7b104773",
+  "transform_version": "92244de2f99af9d46c05529ddfa165cf0eb2bd2357c270ac4fe818df1b1ccfe4"
+}

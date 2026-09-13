@@ -1,0 +1,23 @@
+{
+  "baseline_release": "47fb80927dcb7fdd8439c85304486c9e7c96b494bc9fe705b80ffbf811f69c95",
+  "release": "e773b85bff14bf7ebe067526726acd3bacfb4ee80773a1d48adb3b0efb34286c",
+  "scope": "Raw row identity; audit/facts excluding serialization-dependent content_hash; all dimension columns",
+  "bidirectional_except_all_different_rows": {
+    "dim_product": 0,
+    "transaction_audit": 0,
+    "dim_customer": 0,
+    "transaction_facts": 0,
+    "raw_transactions": 0
+  },
+  "source_sha256": "43465a06f2ccf7c8b5bd2892bc7defb52f97487934fe93b16ae4c3936424676d",
+  "quality_sections_equal": [
+    "input_profile",
+    "reconciliation",
+    "purchases",
+    "cancellations",
+    "dispositions",
+    "dimensions",
+    "dimension_join"
+  ],
+  "source_rows": 541909
+}

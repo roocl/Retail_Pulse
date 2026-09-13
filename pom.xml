@@ -25,6 +25,7 @@
         <module>event-consumer</module>
         <module>analytics-job</module>
         <module>query-api</module>
+        <module>customer-analytics</module>
     </modules>
 
     <properties>
