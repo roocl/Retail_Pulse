@@ -1,0 +1,7 @@
+.customer-pages {display:flex;gap:1rem;justify-content:flex-end;margin:1.5rem 0}
+#batch-context {overflow-wrap:anywhere;line-height:1.8}
+dialog {border:1px solid #ddd;border-radius:16px;padding:2rem;max-width:min(620px,90vw);color:#182b39}
+dialog::backdrop {background:#10202b88}
+dialog form {text-align:right}
+dialog dl {display:grid;grid-template-columns:minmax(100px,1fr) 2fr;gap:.7rem}
+dialog dd {margin:0;overflow-wrap:anywhere}

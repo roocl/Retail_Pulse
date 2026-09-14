@@ -27,7 +27,7 @@ class QueryUnavailableTest {
     void unavailableDatabaseReturnsServiceUnavailableWithoutConnectionDetails() throws Exception {
         http.perform(get("/api/metrics/latest")).andExpect(status().isServiceUnavailable())
                 .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
-                .andExpect(jsonPath("$.detail").value("指标存储暂时不可用，请稍后重试"))
+                .andExpect(jsonPath("$.detail").value("数据存储暂时不可用，请稍后重试"))
                 .andExpect(content().string(not(containsString("jdbc:"))));
         http.perform(get("/actuator/health")).andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.status").value("DOWN"));

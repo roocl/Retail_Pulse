@@ -1,0 +1,12 @@
+{
+  "url": "http://127.0.0.1:8080/customers.html",
+  "method": "Actual browser interactions through Codex in-app browser",
+  "checks": [
+    "Customer list and observation context",
+    "Customer detail including RFM and cancellation amount",
+    "Unknown customer empty state",
+    "High-value segment filter",
+    "Next page preserves segment and batch"
+  ],
+  "verified_on": "2026-09-13"
+}

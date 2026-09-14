@@ -1,0 +1,61 @@
+{
+  "scope": "Focused Spark/MySQL, customer HTTP and existing realtime query tests; full reactor tests not run.",
+  "checks": [
+    {
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "com.retailpulse.offline.ProfilesTest.windowIncludesStartAndExcludesEndAndAnonymousRows()",
+        "com.retailpulse.offline.ProfilesTest.historicalProfilesExcludeFutureAndSeparateCancellations()",
+        "com.retailpulse.offline.ProfileStoreTest.publishIsAtomicRepeatableAndPaginationKeepsItsBatch()"
+      ],
+      "failures": 0,
+      "suite": "JUnit Jupiter",
+      "tests": 3
+    },
+    {
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "com.retailpulse.query.CustomerHttpTest.customerEndpointsExposeBatchAndValidateRequests"
+      ],
+      "failures": 0,
+      "suite": "com.retailpulse.query.CustomerHttpTest",
+      "tests": 1
+    },
+    {
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "com.retailpulse.query.QueryUnavailableTest.dashboardAssetsRemainAvailableWhenTheDatabaseIsDown",
+        "com.retailpulse.query.QueryUnavailableTest.unavailableDatabaseReturnsServiceUnavailableWithoutConnectionDetails"
+      ],
+      "failures": 0,
+      "suite": "com.retailpulse.query.QueryUnavailableTest",
+      "tests": 2
+    },
+    {
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "com.retailpulse.query.MetricsHttpIT.exposesRangeAndMatchingRankingWithBoundedParameters",
+        "com.retailpulse.query.MetricsHttpIT.servesExactJsonThroughTheRealRepositoryAndReportsNoData"
+      ],
+      "failures": 0,
+      "suite": "com.retailpulse.query.MetricsHttpIT",
+      "tests": 2
+    },
+    {
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "com.retailpulse.query.MetricsRepositoryIT.latestReadsTheNewestWindowAndConvergedVersionWithoutLosingPrecision",
+        "com.retailpulse.query.MetricsRepositoryIT.rankingDistinguishesPendingEmptyAndReadyAndNeverMixesVersions",
+        "com.retailpulse.query.MetricsRepositoryIT.rangeIsHalfOpenOrderedAndReportsTruncation"
+      ],
+      "failures": 0,
+      "suite": "com.retailpulse.query.MetricsRepositoryIT",
+      "tests": 3
+    }
+  ]
+}

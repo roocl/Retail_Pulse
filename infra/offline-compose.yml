@@ -56,12 +56,52 @@ services:
       retries: 30
     logging: *logging
 
+  customer-mysql:
+    image: mysql:8.4.6@sha256:869218921e61d6c3c89820955d63cca42971f0e3e6c1e2792247bbd944ebc6e9
+    restart: unless-stopped
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: customers
+      MYSQL_USER: customer
+      MYSQL_PASSWORD: ${CUSTOMER_MYSQL_PASSWORD:?Set CUSTOMER_MYSQL_PASSWORD in .env}
+    command: ["--innodb-buffer-pool-size=64M", "--max-connections=20", "--performance-schema=OFF"]
+    mem_limit: 384m
+    volumes:
+      - customer-mysql:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3307:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -ucustomer -e 'SELECT 1' customers >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+    logging: *logging
+
+  query-api:
+    extends:
+      file: app-compose.yml
+      service: query-api
+    profiles: [serving]
+    environment:
+      CUSTOMER_ENABLED: "true"
+      CUSTOMER_JDBC_URL: jdbc:mysql://customer-mysql:3306/customers?connectTimeout=2000&socketTimeout=15000
+      CUSTOMER_MYSQL_PASSWORD: ${CUSTOMER_MYSQL_PASSWORD:?Set CUSTOMER_MYSQL_PASSWORD in .env}
+      CLICKHOUSE_JDBC_URL: jdbc:clickhouse://host.docker.internal:8123/retailpulse
+    depends_on: !override
+      customer-mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/api/customers?limit=1"]
+
   spark:
     image: retailpulse/offline:local
     build:
       context: ../customer-analytics
       target: spark
     profiles: [jobs]
+    environment:
+      CUSTOMER_JDBC_URL: jdbc:mysql://customer-mysql:3306/customers?connectTimeout=2000&socketTimeout=15000
+      CUSTOMER_MYSQL_PASSWORD: ${CUSTOMER_MYSQL_PASSWORD:?Set CUSTOMER_MYSQL_PASSWORD in .env}
     mem_limit: 2304m
     cpus: 2
     volumes:
@@ -73,5 +113,6 @@ services:
     logging: *logging
 
 volumes:
+  customer-mysql:
   offline-mysql:
   offline-warehouse:

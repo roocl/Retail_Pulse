@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>RetailPulse · 客户画像</title><link rel="stylesheet" href="/dashboard.css"><link rel="stylesheet" href="/customers.css"><script type="module" src="/customers.js"></script></head>
+<body>
+<header class="topbar"><a class="brand" href="/">Retail<span>Pulse</span></a><a href="/">实时看板</a></header>
+<main>
+<div class="heading"><div><p class="eyebrow">历史交易分析</p><h1>客户画像</h1><p class="muted">基于真实购买记录的规则分群 · 金额单位 GBP</p></div></div>
+<form id="customer-filters" class="panel controls">
+<label>数据集<input id="customer-dataset" value="uci-online-retail" maxlength="64" required></label>
+<label>客户编号<input id="customer-id" maxlength="64" placeholder="精确查询"></label>
+<label>客户标签<select id="customer-segment"><option value="">全部客户</option><option value="SINGLE_PURCHASE">单次购买</option><option value="REPEAT_CUSTOMER">复购客户</option><option value="HIGH_VALUE">高价值客户</option><option value="AT_RISK">待关注客户</option></select></label>
+<button type="submit">查询画像</button></form>
+<p id="customer-error" class="error" role="alert" hidden></p>
+<p id="customer-status" role="status">正在读取画像…</p>
+<p id="batch-context" class="muted"></p>
+<section id="customer-summary" class="metrics" aria-label="客户分群概况"></section>
+<section class="panel"><div class="table-scroll"><table><thead><tr><th>客户编号</th><th>国家</th><th>最近购买距观察日</th><th>订单数</th><th>购买金额</th><th>标签</th><th>详情</th></tr></thead><tbody id="customer-rows"></tbody></table></div></section>
+<div class="customer-pages"><button id="customer-first" type="button">返回首页</button><button id="customer-next" type="button" disabled>下一页</button></div>
+<dialog id="customer-detail"><form method="dialog"><button>关闭</button></form><h2>客户详情</h2><p id="detail-context" class="muted"></p><dl id="detail-fields"></dl><p class="muted">取消金额来自未关联原订单的取消记录。RFM 为当前观察批次的相对评分，不是预测概率。</p></dialog>
+</main></body></html>

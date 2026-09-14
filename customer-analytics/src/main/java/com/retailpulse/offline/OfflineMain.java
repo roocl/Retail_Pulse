@@ -21,7 +21,9 @@ import java.util.zip.ZipInputStream;
 
 @Command(name = "retailpulse-offline", mixinStandardHelpOptions = true)
 public final class OfflineMain implements Callable<Integer> {
-    enum Action { DOWNLOAD, INGEST, BUILD, REPORT, PLAN, VERSION }
+    enum Action { DOWNLOAD, INGEST, BUILD, REPORT, PLAN, VERSION, PROFILE }
+    @Option(names = "--window-days", defaultValue = "180") private int windowDays;
+    @Option(names = "--dataset", defaultValue = "uci-online-retail") private String dataset;
     @Option(names = "--root") private Path root = Path.of("/data/retail");
     @Parameters(index = "0") private Action action;
     @Parameters(index = "1..*", arity = "0..2") private List<String> arguments = new ArrayList<>();
@@ -31,7 +33,7 @@ public final class OfflineMain implements Callable<Integer> {
     }
 
     @Override public Integer call() throws Exception {
-        int required = switch (action) { case DOWNLOAD, VERSION -> 0; case INGEST, BUILD, REPORT -> 1; case PLAN -> 2; };
+        int required = switch (action) { case DOWNLOAD, VERSION -> 0; case INGEST, BUILD, REPORT -> 1; case PLAN, PROFILE -> 2; };
         if (arguments.size() != required) throw new IllegalArgumentException(action + " requires " + required + " argument(s)");
         if (action == Action.VERSION) {
             System.out.println(Warehouse.implementationVersion());
@@ -68,6 +70,33 @@ public final class OfflineMain implements Callable<Integer> {
                 case BUILD -> System.out.println(warehouse.build(Path.of(arguments.get(0))));
                 case REPORT -> System.out.println(Artifacts.JSON.writerWithDefaultPrettyPrinter().writeValueAsString(warehouse.report(arguments.get(0))));
                 case PLAN -> System.out.println(warehouse.partitionPlan(arguments.get(0), arguments.get(1)));
+                case PROFILE -> {
+                    String sourceRelease = arguments.get(0);
+                    warehouse.report(sourceRelease);
+                    var observation = java.time.LocalDate.parse(arguments.get(1));
+                    var calculator = new Profiles();
+                    var rows = calculator.calculate(spark.table("transaction_facts"), observation, windowDays).collectAsList();
+                    var profiles = rows.stream().map(row -> new com.retailpulse.customer.Profile(
+                            row.getAs("customer_id"), row.getAs("country"), ((Number)row.getAs("recency_days")).intValue(),
+                            ((Number)row.getAs("orders")).longValue(), row.getAs("purchase_amount"), row.getAs("cancellation_amount"),
+                            row.getAs("preferred_product"), row.getAs("r_score"), row.getAs("f_score"), row.getAs("m_score"), row.getAs("segment"))).toList();
+                    String ruleVersion;
+                    try (var code = Profiles.class.getResourceAsStream("Profiles.class")) {
+                        ruleVersion = Artifacts.sha256(Artifacts.sql("profiles") + java.util.HexFormat.of().formatHex(code.readAllBytes()));
+                    }
+                    String id = Artifacts.sha256(sourceRelease + ":" + ruleVersion + ":" + observation + ":" + windowDays + ":" + dataset);
+                    var batch = new com.retailpulse.customer.ProfileBatch(id, dataset, sourceRelease, ruleVersion, observation, windowDays);
+                    var source = new org.springframework.jdbc.datasource.DriverManagerDataSource(
+                            System.getenv("CUSTOMER_JDBC_URL"), "customer", System.getenv("CUSTOMER_MYSQL_PASSWORD"));
+                    var store = new com.retailpulse.customer.ProfileStore(source);
+                    store.initialize();
+                    store.publish(batch, profiles);
+                    Path output = Files.createDirectories(root.resolve("profiles").resolve(id));
+                    Artifacts.publish(output.resolve("summary.json"), store.summary(dataset,id));
+                    Artifacts.publish(output.resolve("batch.json"), java.util.Map.of("id",id,"dataset",dataset,"source_release",sourceRelease,
+                            "rule_version",ruleVersion,"observation",observation.toString(),"window_days",windowDays,"customers",profiles.size()));
+                    System.out.println(id);
+                }
                 default -> throw new IllegalStateException("Unexpected action");
             }
         }

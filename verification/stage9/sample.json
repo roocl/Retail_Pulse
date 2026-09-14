@@ -1,0 +1,13 @@
+{
+  "customerId": "12347",
+  "country": "Iceland",
+  "recencyDays": 3,
+  "orders": "3",
+  "purchaseAmount": "2104.050000",
+  "cancellationAmount": "0.000000",
+  "preferredProduct": "84558A",
+  "rScore": 3,
+  "fScore": 2,
+  "mScore": 3,
+  "segment": "REPEAT_CUSTOMER"
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "segment": "AT_RISK",
+    "customers": "351",
+    "purchase_amount": "326357.240000",
+    "cancellation_amount": "-7546.440000",
+    "orders": "894"
+  },
+  {
+    "segment": "HIGH_VALUE",
+    "customers": "670",
+    "purchase_amount": "3330350.030000",
+    "cancellation_amount": "-122511.760000",
+    "orders": "5565"
+  },
+  {
+    "segment": "REPEAT_CUSTOMER",
+    "customers": "991",
+    "purchase_amount": "904813.361000",
+    "cancellation_amount": "-30402.720000",
+    "orders": "2639"
+  },
+  {
+    "segment": "SINGLE_PURCHASE",
+    "customers": "1465",
+    "purchase_amount": "723656.772000",
+    "cancellation_amount": "-184962.560000",
+    "orders": "1465"
+  }
+]

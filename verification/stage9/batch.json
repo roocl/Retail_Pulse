@@ -1,0 +1,9 @@
+{
+  "customers" : 3477,
+  "observation" : "2011-12-10",
+  "window_days" : 180,
+  "id" : "f2b16611b70501b4bfdc2cec72d36e48f30d0c802dc4cd366dbb7e742dedfea5",
+  "rule_version" : "ea4f89ac0d97ce788fbeede265c9cfa5a576a2243f68735a03b3aeaee3842f04",
+  "dataset" : "uci-online-retail",
+  "source_release" : "e773b85bff14bf7ebe067526726acd3bacfb4ee80773a1d48adb3b0efb34286c"
+}

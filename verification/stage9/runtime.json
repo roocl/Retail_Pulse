@@ -1,0 +1,39 @@
+{
+  "java": "17",
+  "customerHttpStatus": 200,
+  "scope": "Same query container reads customer MySQL and existing ClickHouse",
+  "metricsHttpStatus": 204,
+  "images": [
+    "[retailpulse/offline:local] sha256:d39ef510c1b0ad9601f776fa81236527ca0685b7a6198e165ed576f27b473ffe",
+    "[retailpulse/query-api:local] sha256:18fce4a783ae163d151d898e26e6934dd9c99410f610ee4a7299892afa1f22b7"
+  ],
+  "source_sha256": {
+    "customer-analytics/pom.xml": "5ba6a3d58fe77c6b481d25f35558dc215489d11c0dfff5787107a4d407d25e37",
+    "customer-analytics/src/main/java/com/retailpulse/offline/OfflineMain.java": "b881e265233357af1ae8d1eb83b77d4c1fda6fe8acf29f335ca7538d7da98dba",
+    "customer-analytics/src/main/java/com/retailpulse/offline/Profiles.java": "23e385906e1bd244178fb157db68464343b7ffbd78904c11c2f43dd446842467",
+    "customer-analytics/src/main/resources/sql/profiles.sql": "742dfaea744200d7abce8d30314c07e12c37426df1888786eef8735808838e69",
+    "customer-analytics/src/test/java/com/retailpulse/offline/ProfilesTest.java": "f6215da11d18efcd6c89d5b2ff18ffcb28cb96e7d6c4939fd10c1e0677e8256c",
+    "customer-analytics/src/test/java/com/retailpulse/offline/ProfileStoreTest.java": "97866b93d0c1aeb8b66a14e0249ae508f266a26855bce1be46a64d22c2533e35",
+    "customer-store/pom.xml": "7252260f38bf30db446d35638f5e185edc535415c438fc10036e457e793dbbe8",
+    "customer-store/src/main/java/com/retailpulse/customer/Profile.java": "0d92a845705d4364a2e07b1ab6cb2b61105198eeee89de51ddf1deb5c347572c",
+    "customer-store/src/main/java/com/retailpulse/customer/ProfileBatch.java": "feef42dcc88ad8723a83fdc26d5f96626db851a52bca26d72616d93cb4bf3ddb",
+    "customer-store/src/main/java/com/retailpulse/customer/ProfileStore.java": "db301cc4feaa6598b491fc0c3701c7c78f19dce2c01882e2e074a9f79981faa5",
+    "infra/customer/schema.sql": "61cf577323bdccb1ddd80ff10ffc7bbf72fa82b4bdd5f0d1e8f0a2c30c42970c",
+    "infra/offline-compose.yml": "d4ccc3da5084c5b9c986253a4ebf84fbad2e982330e92784cd66804b40386eb5",
+    "pom.xml": "fcc3d56022b790187ee533a288e60179a5151cd5248f522b3550d6c93cdd9c26",
+    "query-api/pom.xml": "e09117e65f3bbb266599aa929a46324accba90e064d9592d0258e2a9820e56f1",
+    "query-api/src/main/java/com/retailpulse/query/CustomerConfiguration.java": "d09d00d9cabeacb94d68bd621e2621019d7d30c4980af72d50a360f629f0e258",
+    "query-api/src/main/java/com/retailpulse/query/CustomerController.java": "4afea9825ca709b6f05492950fe27454159caac4de3d212dec6e5d72dab3f668",
+    "query-api/src/main/java/com/retailpulse/query/QueryErrors.java": "16a224491b044970e2d4444bcae26cd28219ef41dc9dc116897042a8d22cf3e9",
+    "query-api/src/main/resources/application.yml": "f6ed95c3bcb9f0f78cc796bb42637761901093bf4f809cad41d5831202a83904",
+    "query-api/src/main/resources/dashboard/customers.css": "39128ba451d2aec3519d7de32b3d4ba45f07973f0ff1110425a7f924e4c96041",
+    "query-api/src/main/resources/dashboard/customers.html": "48f8e3494a684f5bd64bb6a2db2c8b2aeeebe9e49972ba5bbcce58b4fac5e1d5",
+    "query-api/src/main/resources/dashboard/customers.js": "e6beb499cabc7a52ca6766fc70405d2067ac2c188d8a989df7d68a23bdb1dbab",
+    "query-api/src/main/resources/dashboard/index.html": "bdb7b86f78e4f761f5fd8e28d00ef60da289b4280dc0a8441c35245691321994",
+    "query-api/src/test/java/com/retailpulse/query/CustomerHttpTest.java": "0257d2309081c2da8fd3f0fbfb41200236111fda700d73e84aef4e562a2039ae",
+    "query-api/src/test/java/com/retailpulse/query/QueryUnavailableTest.java": "3a222ed9d061c8255016e990480594bd6a7944e27f17338eb2a44469c1397e86",
+    "scripts/offline.ps1": "6de18c34395b72fc227f217a169cbeb519a577e7d7825354488741c1625866fd",
+    "scripts/stage9-smoke.ps1": "4b0cff2ceeee029e3386ef07e738973f38c121e7d406750a5d06565409b4a389"
+  },
+  "customer_restart_policy": "unless-stopped; query HTTP 200 after container recreation"
+}

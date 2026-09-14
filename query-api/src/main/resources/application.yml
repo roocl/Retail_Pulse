@@ -17,6 +17,10 @@ spring:
     problemdetails:
       enabled: true
 retailpulse:
+  customer:
+    enabled: ${CUSTOMER_ENABLED:false}
+    url: ${CUSTOMER_JDBC_URL:jdbc:mysql://localhost:3307/customers?connectTimeout=2000&socketTimeout=15000}
+    password: ${CUSTOMER_MYSQL_PASSWORD:}
   clickhouse:
     url: ${CLICKHOUSE_JDBC_URL:jdbc:clickhouse://localhost:8123/retailpulse}
     user: ${CLICKHOUSE_USER:retailpulse}

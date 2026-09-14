@@ -8,6 +8,7 @@
     </parent>
     <artifactId>query-api</artifactId>
     <dependencies>
+        <dependency><groupId>com.retailpulse</groupId><artifactId>customer-store</artifactId><version>${project.version}</version></dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
