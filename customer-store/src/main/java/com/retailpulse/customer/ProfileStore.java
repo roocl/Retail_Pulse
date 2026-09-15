@@ -19,7 +19,7 @@ import java.util.Optional;
 public final class ProfileStore {
     private final DataSource source;
     private final JdbcTemplate jdbc;
-    private final TransactionTemplate transaction;
+    private final BatchPublisher publisher;
     private static final RowMapper<Profile> PROFILE = (r,n) -> new Profile(r.getString("customer_id"),r.getString("country"),
             r.getInt("recency_days"),r.getLong("orders"),r.getBigDecimal("purchase_amount"),r.getBigDecimal("cancellation_amount"),
             r.getString("preferred_product"),r.getInt("r_score"),r.getInt("f_score"),r.getInt("m_score"),r.getString("segment"));
@@ -30,7 +30,7 @@ public final class ProfileStore {
         this.source=source;
         jdbc=new JdbcTemplate(source);
         jdbc.setQueryTimeout(15);
-        transaction=new TransactionTemplate(new DataSourceTransactionManager(source));
+        publisher=new BatchPublisher(jdbc,new TransactionTemplate(new DataSourceTransactionManager(source)));
     }
 
     public void initialize() {
@@ -39,22 +39,8 @@ public final class ProfileStore {
 
     public void publish(ProfileBatch batch, List<Profile> profiles) {
         var sorted=profiles.stream().sorted(Comparator.comparing(Profile::customerId)).toList();
-        final String hash;
-        try {
-            var digest=MessageDigest.getInstance("SHA-256");
-            digest.update(batch.toString().getBytes(StandardCharsets.UTF_8));
-            hash=HexFormat.of().formatHex(digest.digest(new ObjectMapper().writeValueAsBytes(sorted)));
-        } catch (Exception error) { throw new IllegalStateException("Cannot identify profile content",error); }
-        transaction.executeWithoutResult(status -> {
-            jdbc.update("INSERT INTO profile_current(dataset) VALUES (?) ON DUPLICATE KEY UPDATE dataset=VALUES(dataset)",batch.dataset());
-            jdbc.queryForList("SELECT batch_id FROM profile_current WHERE dataset=? FOR UPDATE",batch.dataset());
-            var existing=jdbc.queryForList("SELECT content_hash FROM profile_batches WHERE id=?",String.class,batch.id());
-            if (!existing.isEmpty()) {
-                if (!existing.get(0).equals(hash)) throw new IllegalStateException("Batch identity already has different content");
-                if (!jdbc.query("SELECT * FROM customer_profiles WHERE batch_id=? ORDER BY customer_id",PROFILE,batch.id()).equals(sorted))
-                    throw new IllegalStateException("Published customer data is inconsistent");
-                return;
-            }
+        String hash=contentHash(batch,sorted);
+        publisher.publish(BatchPublisher.Kind.PROFILE,batch.dataset(),batch.id(),hash,()->{
             jdbc.update("INSERT INTO profile_batches(id,dataset,source_release,rule_version,observation,window_days,content_hash,customer_count) VALUES (?,?,?,?,?,?,?,?)",
                     batch.id(),batch.dataset(),batch.sourceRelease(),batch.ruleVersion(),batch.observation(),batch.windowDays(),hash,sorted.size());
             jdbc.batchUpdate("INSERT INTO customer_profiles VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",sorted,500,(statement,p) -> {
@@ -63,10 +49,52 @@ public final class ProfileStore {
                 statement.setBigDecimal(7,p.cancellationAmount());statement.setString(8,p.preferredProduct());
                 statement.setInt(9,p.rScore());statement.setInt(10,p.fScore());statement.setInt(11,p.mScore());statement.setString(12,p.segment());
             });
-            jdbc.update("UPDATE profile_current SET batch_id=? WHERE dataset=?",batch.id(),batch.dataset());
+        },()->{
+            if(!jdbc.query("SELECT * FROM customer_profiles WHERE batch_id=? ORDER BY customer_id",PROFILE,batch.id()).equals(sorted))
+                throw new IllegalStateException("Published customer data is inconsistent");
         });
     }
 
+    private static String contentHash(Object batch,List<?> rows) {
+        try {
+            var digest=MessageDigest.getInstance("SHA-256");
+            digest.update(batch.toString().getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(digest.digest(new ObjectMapper().writeValueAsBytes(rows)));
+        } catch(Exception error){throw new IllegalStateException("Cannot identify batch content",error);}
+    }
+
+    public record Prediction(ScoreBatch batch,CustomerScore score) {}
+
+    public void publishScores(ScoreBatch batch,List<CustomerScore> scores) {
+        var sorted=scores.stream().sorted(Comparator.comparing(CustomerScore::customerId)).toList();
+        publisher.publish(BatchPublisher.Kind.SCORE,batch.profileBatchId(),batch.id(),contentHash(batch,sorted),()->{
+            jdbc.update("INSERT INTO score_batches(id,profile_batch_id,model_id,algorithm,horizon_days,content_hash,customer_count) VALUES (?,?,?,?,?,?,?)",
+                    batch.id(),batch.profileBatchId(),batch.modelId(),batch.algorithm(),batch.horizonDays(),contentHash(batch,sorted),sorted.size());
+            jdbc.batchUpdate("INSERT INTO customer_scores(batch_id,profile_batch_id,customer_id,score) VALUES (?,?,?,?)",sorted,500,(statement,row)->{
+                statement.setString(1,batch.id());statement.setString(2,batch.profileBatchId());
+                statement.setString(3,row.customerId());statement.setBigDecimal(4,row.value());
+            });
+        },()->{
+            var expected=jdbc.queryForList("SELECT customer_id FROM customer_profiles WHERE batch_id=? ORDER BY customer_id",String.class,batch.profileBatchId());
+            if(!expected.equals(sorted.stream().map(CustomerScore::customerId).toList()))
+                throw new IllegalStateException("Scores must cover exactly the profile batch customers");
+            var actual=jdbc.query("SELECT customer_id,score FROM customer_scores WHERE batch_id=? ORDER BY customer_id",
+                    (r,n)->new CustomerScore(r.getString(1),r.getBigDecimal(2)),batch.id());
+            if(!actual.equals(sorted))throw new IllegalStateException("Published score data is inconsistent");
+        });
+    }
+
+    public Optional<Prediction> prediction(String dataset,String profileBatchId,String customerId) {
+        return jdbc.query("""
+                SELECT b.*,s.customer_id,s.score FROM score_current c
+                JOIN score_batches b ON b.id=c.batch_id
+                JOIN customer_scores s ON s.batch_id=b.id
+                JOIN profile_batches p ON p.id=c.profile_batch_id
+                WHERE p.dataset=? AND p.id=? AND s.customer_id=?
+                """,(r,n)->new Prediction(new ScoreBatch(r.getString("id"),r.getString("profile_batch_id"),
+                        r.getString("model_id"),r.getString("algorithm"),r.getInt("horizon_days")),
+                        new CustomerScore(r.getString("customer_id"),r.getBigDecimal("score"))),dataset,profileBatchId,customerId).stream().findFirst();
+    }
     public record Page(ProfileBatch batch,List<Profile> items,boolean hasMore,String nextAfter) {}
 
     public Page list(String dataset,String batchId,String after,String segment,String customerId,int limit) {

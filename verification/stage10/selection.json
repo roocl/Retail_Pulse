@@ -1,0 +1,85 @@
+{
+  "selected" : {
+    "id" : "logistic-0.01",
+    "algorithm" : "LOGISTIC_REGRESSION",
+    "regularization" : 0.01,
+    "max_depth" : 0
+  },
+  "finalists" : [ {
+    "id" : "logistic-0.01",
+    "algorithm" : "LOGISTIC_REGRESSION",
+    "regularization" : 0.01,
+    "max_depth" : 0
+  }, {
+    "id" : "forest-5",
+    "algorithm" : "RANDOM_FOREST",
+    "regularization" : 0.0,
+    "max_depth" : 5
+  } ],
+  "validation" : [ {
+    "candidate" : "recency-baseline",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.4273122820615539,
+      "k" : 555,
+      "precision_at_k" : 0.4702702702702703,
+      "recall_at_k" : 0.28744493392070486,
+      "lift_at_k" : 1.435670913203953
+    }
+  }, {
+    "candidate" : "logistic-0.01",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.6071866895197212,
+      "k" : 555,
+      "precision_at_k" : 0.6324324324324324,
+      "recall_at_k" : 0.3865638766519824,
+      "lift_at_k" : 1.9307298487915228
+    }
+  }, {
+    "candidate" : "logistic-0.1",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.5994500250154599,
+      "k" : 555,
+      "precision_at_k" : 0.6342342342342342,
+      "recall_at_k" : 0.3876651982378855,
+      "lift_at_k" : 1.9362305036313847
+    }
+  }, {
+    "candidate" : "forest-3",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.5877686269665213,
+      "k" : 555,
+      "precision_at_k" : 0.6360360360360361,
+      "recall_at_k" : 0.38876651982378857,
+      "lift_at_k" : 1.9417311584712469
+    }
+  }, {
+    "candidate" : "forest-5",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.6014134633649764,
+      "k" : 555,
+      "precision_at_k" : 0.6378378378378379,
+      "recall_at_k" : 0.3898678414096916,
+      "lift_at_k" : 1.9472318133111086
+    }
+  } ]
+}

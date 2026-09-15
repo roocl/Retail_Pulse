@@ -16,7 +16,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 
 final class Artifacts {
-    static final ObjectMapper JSON = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    static final ObjectMapper JSON = new ObjectMapper().registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
+            .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
     static String sha256(Path file) throws IOException {
         var digest = digest();

@@ -1,0 +1,23 @@
+{
+  "httpTests": {
+    "skipped": 0,
+    "log": "target/stage10-http-test.log",
+    "failed": 0,
+    "passed": 1
+  },
+  "focusedTests": {
+    "skipped": 0,
+    "log": "target/stage10-focused-test.log",
+    "failed": 0,
+    "passed": 8
+  },
+  "browser": {
+    "calibrationNotice": true,
+    "score": "0.4239",
+    "sourceVisible": true,
+    "customer": "12347"
+  },
+  "diffCheck": true,
+  "powerShellSyntax": true,
+  "credentialScan": true
+}

@@ -35,6 +35,12 @@ class CustomerHttpTest {
         mvc.perform(get("/api/customers/missing").param("dataset",dataset).param("batch",batch.id())).andExpect(status().isNotFound());
         mvc.perform(get("/api/customers").param("limit","101")).andExpect(status().isBadRequest());
         mvc.perform(get("/api/customers").param("segment","INVALID")).andExpect(status().isBadRequest());
+        mvc.perform(get("/api/customers/42/prediction").param("dataset",dataset).param("batch",batch.id())).andExpect(status().isNoContent());
+        var scoreBatch=new com.retailpulse.customer.ScoreBatch(UUID.randomUUID().toString(),batch.id(),"model","LOGISTIC_REGRESSION",30);
+        store.publishScores(scoreBatch,List.of(new com.retailpulse.customer.CustomerScore("42",new BigDecimal("0.75"))));
+        mvc.perform(get("/api/customers/42/prediction").param("dataset",dataset).param("batch",batch.id()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.score.value").value(0.75))
+                .andExpect(jsonPath("$.batch.modelId").value("model"));
         mvc.perform(get("/customers.html")).andExpect(status().isOk());
     }
 }

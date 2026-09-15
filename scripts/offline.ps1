@@ -25,7 +25,7 @@ if ($Action -eq 'up') {
 } elseif ($Action -eq 'down') {
     Invoke-Docker ($offlineCompose + @('down')) | Write-Output
 } elseif ($Action -eq 'run') {
-    if (!$JobArguments) { throw 'Specify download, ingest, build, report, plan, profile or version arguments.' }
+    if (!$JobArguments) { throw 'Specify download, ingest, build, report, plan, profile, train, samples, evaluate, score or version arguments.' }
     Invoke-Docker ($offlineCompose + @('run','--rm','-T','--no-deps','spark') + $JobArguments) | Write-Output
 } elseif ($Action -eq 'test') {
     Invoke-Docker ($offlineCompose + @('run','--rm','-T','--no-deps','spark','test') + $JobArguments) | Write-Output

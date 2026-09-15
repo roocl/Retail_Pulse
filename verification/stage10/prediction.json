@@ -1,0 +1,13 @@
+{
+  "batch": {
+    "id": "3f13e4b333e4e796bcc2740f6327fc28e94b0c80452217895db6a7e8671a6ddc",
+    "profileBatchId": "f2b16611b70501b4bfdc2cec72d36e48f30d0c802dc4cd366dbb7e742dedfea5",
+    "modelId": "6619862cc8e171794ff3daaf351fa5b05499cfc76a2c37634311941b68f3e187",
+    "algorithm": "LOGISTIC_REGRESSION",
+    "horizonDays": 30
+  },
+  "score": {
+    "customerId": "12347",
+    "value": "0.423895431369"
+  }
+}

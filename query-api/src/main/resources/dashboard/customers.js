@@ -5,7 +5,7 @@ const value = text => text == null ? '—' : String(text);
 async function read(url, signal) {
   const response = await fetch(url,{signal});
   if (!response.ok) throw new Error(response.status === 404 ? '客户或画像批次不存在，或客户服务尚未启用。' : '客户数据读取失败，请稍后重试。');
-  return response.json();
+  return response.status === 204 ? null : response.json();
 }
 async function load(reset = true) {
   controller?.abort(); detailController?.abort(); controller = new AbortController(); const current = ++generation;
@@ -53,7 +53,11 @@ async function detail(selectedBatch,customerId){
     $('detail-fields').replaceChildren();$('detail-context').textContent=`${selectedBatch.dataset} · 观察日期 ${selectedBatch.observation}`;
     const fields={'客户编号':profile.customerId,'国家':profile.country,'标签':labels[profile.segment],'距最近购买':`${profile.recencyDays} 天`,'购买订单':profile.orders,'购买金额 GBP':profile.purchaseAmount,'取消金额 GBP':profile.cancellationAmount,'偏好商品编号':profile.preferredProduct,'R / F / M':`${profile.rScore} / ${profile.fScore} / ${profile.mScore}`};
     for(const [name,item] of Object.entries(fields)){const term=document.createElement('dt'),description=document.createElement('dd');term.textContent=name;description.textContent=value(item);$('detail-fields').append(term,description);}
+    $('prediction-value').textContent='正在读取预测…';$('prediction-source').textContent='';
     $('customer-detail').showModal();
+    const prediction=await read(`/api/customers/${encodeURIComponent(customerId)}/prediction?${new URLSearchParams({dataset:selectedBatch.dataset,batch:selectedBatch.id})}`,detailController.signal);
+    $('prediction-value').textContent=prediction ? `未来 ${prediction.batch.horizonDays} 天复购排序分数：${Number(prediction.score.value).toFixed(4)}` : '此画像批次尚无已发布预测';
+    $('prediction-source').textContent=prediction ? `评分观察日 ${selectedBatch.observation} · ${prediction.batch.algorithm} · 模型 ${prediction.batch.modelId}` : '';
   }catch(error){if(error.name!=='AbortError'){$('customer-error').textContent=error.message;$('customer-error').hidden=false;}}
 }
 $('customer-filters').addEventListener('submit',event=>{event.preventDefault();load();});

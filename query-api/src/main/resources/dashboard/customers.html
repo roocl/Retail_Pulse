@@ -16,5 +16,5 @@
 <section id="customer-summary" class="metrics" aria-label="客户分群概况"></section>
 <section class="panel"><div class="table-scroll"><table><thead><tr><th>客户编号</th><th>国家</th><th>最近购买距观察日</th><th>订单数</th><th>购买金额</th><th>标签</th><th>详情</th></tr></thead><tbody id="customer-rows"></tbody></table></div></section>
 <div class="customer-pages"><button id="customer-first" type="button">返回首页</button><button id="customer-next" type="button" disabled>下一页</button></div>
-<dialog id="customer-detail"><form method="dialog"><button>关闭</button></form><h2>客户详情</h2><p id="detail-context" class="muted"></p><dl id="detail-fields"></dl><p class="muted">取消金额来自未关联原订单的取消记录。RFM 为当前观察批次的相对评分，不是预测概率。</p></dialog>
+<dialog id="customer-detail"><form method="dialog"><button>关闭</button></form><h2>客户详情</h2><p id="detail-context" class="muted"></p><dl id="detail-fields"></dl><p class="muted">取消金额来自未关联原订单的取消记录。RFM 为当前观察批次的相对评分，不是预测概率。</p><h3>未来复购排序</h3><p id="prediction-value"></p><p id="prediction-source" class="muted"></p><p class="muted">模型分数用于客户排序，未经概率校准。离线评估不代表实际营销增益。</p></dialog>
 </main></body></html>

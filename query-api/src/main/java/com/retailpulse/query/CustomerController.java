@@ -37,6 +37,12 @@ public class CustomerController {
         return store.find(dataset,batch,customerId).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{customerId}/prediction") public ResponseEntity<ProfileStore.Prediction> prediction(
+            @PathVariable @Size(max=64) String customerId,
+            @RequestParam(defaultValue="uci-online-retail") @NotBlank @Size(max=64) String dataset,
+            @RequestParam @NotBlank @Size(max=64) String batch) {
+        return store.prediction(dataset,batch,customerId).map(ResponseEntity::ok).orElseGet(()->ResponseEntity.noContent().build());
+    }
     @GetMapping("/summary") public List<Map<String,Object>> summary(
             @RequestParam(defaultValue="uci-online-retail") @NotBlank @Size(max=64) String dataset,
             @RequestParam @NotBlank @Size(max=64) String batch) {

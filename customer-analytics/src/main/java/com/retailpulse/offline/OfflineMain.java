@@ -21,7 +21,7 @@ import java.util.zip.ZipInputStream;
 
 @Command(name = "retailpulse-offline", mixinStandardHelpOptions = true)
 public final class OfflineMain implements Callable<Integer> {
-    enum Action { DOWNLOAD, INGEST, BUILD, REPORT, PLAN, VERSION, PROFILE }
+    enum Action { DOWNLOAD, INGEST, BUILD, REPORT, PLAN, VERSION, PROFILE, TRAIN, EVALUATE, SCORE, SAMPLES }
     @Option(names = "--window-days", defaultValue = "180") private int windowDays;
     @Option(names = "--dataset", defaultValue = "uci-online-retail") private String dataset;
     @Option(names = "--root") private Path root = Path.of("/data/retail");
@@ -33,7 +33,7 @@ public final class OfflineMain implements Callable<Integer> {
     }
 
     @Override public Integer call() throws Exception {
-        int required = switch (action) { case DOWNLOAD, VERSION -> 0; case INGEST, BUILD, REPORT -> 1; case PLAN, PROFILE -> 2; };
+        int required = switch (action) { case DOWNLOAD, VERSION -> 0; case INGEST, BUILD, REPORT, TRAIN, EVALUATE, SAMPLES -> 1; case PLAN, PROFILE, SCORE -> 2; };
         if (arguments.size() != required) throw new IllegalArgumentException(action + " requires " + required + " argument(s)");
         if (action == Action.VERSION) {
             System.out.println(Warehouse.implementationVersion());
@@ -67,6 +67,14 @@ public final class OfflineMain implements Callable<Integer> {
         try (var spark = SparkSession.builder().appName("retailpulse-offline").enableHiveSupport().getOrCreate()) {
             var warehouse = new Warehouse(spark, root);
             switch (action) {
+                case SAMPLES -> {
+                    new RepurchaseExperiment(spark,root).manifest(arguments.get(0));
+                    spark.read().parquet(root.resolve("models").resolve(arguments.get(0)).resolve("samples").toString())
+                            .groupBy("observation","label").count().orderBy("observation","label").show(false);
+                }
+                case SCORE -> System.out.println(new RepurchaseExperiment(spark,root).score(arguments.get(0),dataset,arguments.get(1)));
+                case EVALUATE -> System.out.println(Artifacts.JSON.writerWithDefaultPrettyPrinter().writeValueAsString(new RepurchaseExperiment(spark,root).evaluation(arguments.get(0))));
+                case TRAIN -> System.out.println(new RepurchaseExperiment(spark, root).train(arguments.get(0)));
                 case BUILD -> System.out.println(warehouse.build(Path.of(arguments.get(0))));
                 case REPORT -> System.out.println(Artifacts.JSON.writerWithDefaultPrettyPrinter().writeValueAsString(warehouse.report(arguments.get(0))));
                 case PLAN -> System.out.println(warehouse.partitionPlan(arguments.get(0), arguments.get(1)));
@@ -80,10 +88,7 @@ public final class OfflineMain implements Callable<Integer> {
                             row.getAs("customer_id"), row.getAs("country"), ((Number)row.getAs("recency_days")).intValue(),
                             ((Number)row.getAs("orders")).longValue(), row.getAs("purchase_amount"), row.getAs("cancellation_amount"),
                             row.getAs("preferred_product"), row.getAs("r_score"), row.getAs("f_score"), row.getAs("m_score"), row.getAs("segment"))).toList();
-                    String ruleVersion;
-                    try (var code = Profiles.class.getResourceAsStream("Profiles.class")) {
-                        ruleVersion = Artifacts.sha256(Artifacts.sql("profiles") + java.util.HexFormat.of().formatHex(code.readAllBytes()));
-                    }
+                    String ruleVersion = Profiles.version();
                     String id = Artifacts.sha256(sourceRelease + ":" + ruleVersion + ":" + observation + ":" + windowDays + ":" + dataset);
                     var batch = new com.retailpulse.customer.ProfileBatch(id, dataset, sourceRelease, ruleVersion, observation, windowDays);
                     var source = new org.springframework.jdbc.datasource.DriverManagerDataSource(

@@ -1,0 +1,295 @@
+{
+  "plan" : {
+    "training" : [ "2011-06-01", "2011-07-01", "2011-08-01" ],
+    "validation" : [ "2011-09-01" ],
+    "test" : [ "2011-10-01", "2011-11-01" ],
+    "history_days" : 180,
+    "horizon_days" : 30,
+    "seed" : 42,
+    "contact_fraction" : 0.2
+  },
+  "validation" : [ {
+    "candidate" : "recency-baseline",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.4273122820615539,
+      "k" : 555,
+      "precision_at_k" : 0.4702702702702703,
+      "recall_at_k" : 0.28744493392070486,
+      "lift_at_k" : 1.435670913203953
+    }
+  }, {
+    "candidate" : "logistic-0.01",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.6071866895197212,
+      "k" : 555,
+      "precision_at_k" : 0.6324324324324324,
+      "recall_at_k" : 0.3865638766519824,
+      "lift_at_k" : 1.9307298487915228
+    }
+  }, {
+    "candidate" : "logistic-0.1",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.5994500250154599,
+      "k" : 555,
+      "precision_at_k" : 0.6342342342342342,
+      "recall_at_k" : 0.3876651982378855,
+      "lift_at_k" : 1.9362305036313847
+    }
+  }, {
+    "candidate" : "forest-3",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.5877686269665213,
+      "k" : 555,
+      "precision_at_k" : 0.6360360360360361,
+      "recall_at_k" : 0.38876651982378857,
+      "lift_at_k" : 1.9417311584712469
+    }
+  }, {
+    "candidate" : "forest-5",
+    "period" : "validation",
+    "metrics" : {
+      "samples" : 2772,
+      "positives" : 908,
+      "prevalence" : 0.32756132756132755,
+      "pr_auc" : 0.6014134633649764,
+      "k" : 555,
+      "precision_at_k" : 0.6378378378378379,
+      "recall_at_k" : 0.3898678414096916,
+      "lift_at_k" : 1.9472318133111086
+    }
+  } ],
+  "selected" : {
+    "id" : "logistic-0.01",
+    "algorithm" : "LOGISTIC_REGRESSION",
+    "regularization" : 0.01,
+    "max_depth" : 0
+  },
+  "spark" : "4.1.0",
+  "reload_identical" : true,
+  "error_examples" : [ {
+    "customer_id" : "17389",
+    "observation" : "2011-10-01",
+    "score" : 0.8977769694173399,
+    "label" : 0.0,
+    "recency_days" : 5,
+    "orders" : 19,
+    "purchase_amount" : 12591.080000,
+    "cancellation_amount" : -80.600000
+  }, {
+    "customer_id" : "17675",
+    "observation" : "2011-10-01",
+    "score" : 0.8804539455791734,
+    "label" : 0.0,
+    "recency_days" : 1,
+    "orders" : 17,
+    "purchase_amount" : 10315.880000,
+    "cancellation_amount" : -61.400000
+  }, {
+    "customer_id" : "16672",
+    "observation" : "2011-10-01",
+    "score" : 0.8662146195195783,
+    "label" : 0.0,
+    "recency_days" : 3,
+    "orders" : 17,
+    "purchase_amount" : 6151.900000,
+    "cancellation_amount" : -41.350000
+  }, {
+    "customer_id" : "17961",
+    "observation" : "2011-10-01",
+    "score" : 0.8553676316282824,
+    "label" : 0.0,
+    "recency_days" : 1,
+    "orders" : 24,
+    "purchase_amount" : 594.640000,
+    "cancellation_amount" : 0.000000
+  }, {
+    "customer_id" : "14735",
+    "observation" : "2011-10-01",
+    "score" : 0.8439575457712637,
+    "label" : 0.0,
+    "recency_days" : 12,
+    "orders" : 18,
+    "purchase_amount" : 2805.400000,
+    "cancellation_amount" : -218.100000
+  }, {
+    "customer_id" : "15863",
+    "observation" : "2011-11-01",
+    "score" : 0.05304100801842515,
+    "label" : 1.0,
+    "recency_days" : 154,
+    "orders" : 1,
+    "purchase_amount" : 9.200000,
+    "cancellation_amount" : 0.000000
+  }, {
+    "customer_id" : "13692",
+    "observation" : "2011-11-01",
+    "score" : 0.05475015072251388,
+    "label" : 1.0,
+    "recency_days" : 175,
+    "orders" : 1,
+    "purchase_amount" : 14.950000,
+    "cancellation_amount" : -6.500000
+  }, {
+    "customer_id" : "17816",
+    "observation" : "2011-11-01",
+    "score" : 0.06701924262492343,
+    "label" : 1.0,
+    "recency_days" : 27,
+    "orders" : 1,
+    "purchase_amount" : 9.010000,
+    "cancellation_amount" : 0.000000
+  }, {
+    "customer_id" : "13283",
+    "observation" : "2011-10-01",
+    "score" : 0.07163633431080008,
+    "label" : 1.0,
+    "recency_days" : 116,
+    "orders" : 1,
+    "purchase_amount" : 25.500000,
+    "cancellation_amount" : 0.000000
+  }, {
+    "customer_id" : "14798",
+    "observation" : "2011-10-01",
+    "score" : 0.07451208955397992,
+    "label" : 1.0,
+    "recency_days" : 75,
+    "orders" : 1,
+    "purchase_amount" : 21.720000,
+    "cancellation_amount" : 0.000000
+  } ],
+  "test" : [ {
+    "candidate" : "recency-baseline",
+    "period" : "test-all",
+    "metrics" : {
+      "samples" : 6119,
+      "positives" : 2129,
+      "prevalence" : 0.3479326687367217,
+      "pr_auc" : 0.40658366036611054,
+      "k" : 1224,
+      "precision_at_k" : 0.4207516339869281,
+      "recall_at_k" : 0.24189760450915923,
+      "lift_at_k" : 1.2092903937839423
+    }
+  }, {
+    "candidate" : "logistic-0.01",
+    "period" : "test-all",
+    "metrics" : {
+      "samples" : 6119,
+      "positives" : 2129,
+      "prevalence" : 0.3479326687367217,
+      "pr_auc" : 0.6027572328453277,
+      "k" : 1224,
+      "precision_at_k" : 0.6413398692810458,
+      "recall_at_k" : 0.3687177078440582,
+      "lift_at_k" : 1.8432872992629024
+    }
+  }, {
+    "candidate" : "forest-5",
+    "period" : "test-all",
+    "metrics" : {
+      "samples" : 6119,
+      "positives" : 2129,
+      "prevalence" : 0.3479326687367217,
+      "pr_auc" : 0.6009581065738008,
+      "k" : 1224,
+      "precision_at_k" : 0.6486928104575164,
+      "recall_at_k" : 0.3729450446218882,
+      "lift_at_k" : 1.8644205294455343
+    }
+  }, {
+    "candidate" : "recency-baseline",
+    "period" : "2011-10-01",
+    "metrics" : {
+      "samples" : 2925,
+      "positives" : 903,
+      "prevalence" : 0.3087179487179487,
+      "pr_auc" : 0.35269939928108207,
+      "k" : 585,
+      "precision_at_k" : 0.335042735042735,
+      "recall_at_k" : 0.21705426356589147,
+      "lift_at_k" : 1.0852713178294573
+    }
+  }, {
+    "candidate" : "logistic-0.01",
+    "period" : "2011-10-01",
+    "metrics" : {
+      "samples" : 2925,
+      "positives" : 903,
+      "prevalence" : 0.3087179487179487,
+      "pr_auc" : 0.5533934492535033,
+      "k" : 585,
+      "precision_at_k" : 0.5726495726495726,
+      "recall_at_k" : 0.3709856035437431,
+      "lift_at_k" : 1.8549280177187153
+    }
+  }, {
+    "candidate" : "forest-5",
+    "period" : "2011-10-01",
+    "metrics" : {
+      "samples" : 2925,
+      "positives" : 903,
+      "prevalence" : 0.3087179487179487,
+      "pr_auc" : 0.546980421504439,
+      "k" : 585,
+      "precision_at_k" : 0.588034188034188,
+      "recall_at_k" : 0.38095238095238093,
+      "lift_at_k" : 1.9047619047619049
+    }
+  }, {
+    "candidate" : "recency-baseline",
+    "period" : "2011-11-01",
+    "metrics" : {
+      "samples" : 3194,
+      "positives" : 1226,
+      "prevalence" : 0.38384470882905447,
+      "pr_auc" : 0.45976926060937817,
+      "k" : 639,
+      "precision_at_k" : 0.49295774647887325,
+      "recall_at_k" : 0.2569331158238173,
+      "lift_at_k" : 1.2842634928658412
+    }
+  }, {
+    "candidate" : "logistic-0.01",
+    "period" : "2011-11-01",
+    "metrics" : {
+      "samples" : 3194,
+      "positives" : 1226,
+      "prevalence" : 0.38384470882905447,
+      "pr_auc" : 0.6490691062461413,
+      "k" : 639,
+      "precision_at_k" : 0.704225352112676,
+      "recall_at_k" : 0.367047308319739,
+      "lift_at_k" : 1.834662132665487
+    }
+  }, {
+    "candidate" : "forest-5",
+    "period" : "2011-11-01",
+    "metrics" : {
+      "samples" : 3194,
+      "positives" : 1226,
+      "prevalence" : 0.38384470882905447,
+      "pr_auc" : 0.6510663132369239,
+      "k" : 639,
+      "precision_at_k" : 0.7120500782472613,
+      "recall_at_k" : 0.37112561174551384,
+      "lift_at_k" : 1.8550472674728815
+    }
+  } ],
+  "java" : "17.0.17"
+}
